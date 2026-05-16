@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type JSX } from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { Badge } from "@/components/atoms/Badge";
 import { StatCard } from "@/components/molecules/StatCard";
 import { STATS } from "@/lib/constants";
@@ -13,7 +14,7 @@ const SPAN_WORDS = [
 ];
 
 export function StatsSection(): JSX.Element {
-  const blockquoteRef = useRef<HTMLElement>(null);
+  const quoteRef = useRef<HTMLParagraphElement>(null);
   const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
   useEffect(() => {
@@ -27,30 +28,26 @@ export function StatsSection(): JSX.Element {
       gsap.registerPlugin(ScrollTrigger);
 
       const words = wordRefs.current.filter(Boolean) as HTMLSpanElement[];
-      if (!words.length || !blockquoteRef.current) return;
+      if (!words.length || !quoteRef.current) return;
 
-      // All words start in gray
-      gsap.set(words, { color: "#D1D5DB" });
+      // Initial state: Faded and slightly shifted down
+      gsap.set(words, { color: "#E5E7EB", y: 10, opacity: 0.8 });
 
-      // Create one timeline that drives all words
       const tl = gsap.timeline({
         scrollTrigger: {
-          trigger: blockquoteRef.current,
-          // Start when the top of the blockquote hits 65% from top of viewport
-          start: "top 65%",
-          // End after scrolling ~60% through the section height
-          end: "bottom 40%",
-          scrub: 1.2, // Ties animation directly to scroll; 1.2 adds a tiny lag for smoothness
-          once: false, // Reversible — scrolling up reverses it
+          trigger: quoteRef.current,
+          start: "top 85%", // Start animation when text is near bottom of viewport
+          end: "top 35%",   // Finish when it reaches upper-middle
+          scrub: 0.8,       // Slightly smoother scrub
         },
       });
 
-      // Stagger each word across the full timeline duration
       tl.to(words, {
-        color: "#111111",
-        duration: 0.4,
-        stagger: 0.15, // Each word starts 0.15 normalized units after the previous
-        ease: "none",  // Linear so color exactly tracks scroll position
+        color: "#000000",
+        y: 0,
+        opacity: 1,
+        stagger: 0.1,
+        ease: "power2.out",
       });
 
       ctx = { revert: () => { ScrollTrigger.getAll().forEach((t) => t.kill()); } };
@@ -114,49 +111,73 @@ export function StatsSection(): JSX.Element {
           ))}
         </div>
 
-        {/* Bottom quote — first sentence static, span words scroll-animated */}
-        <motion.blockquote
-          ref={blockquoteRef}
-          initial={{ opacity: 0, y: 30 }}
+        {/* Bottom quote — Re-imagined as a high-impact editorial layout */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-10%" }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-16 pt-12 border-t border-neutral-200"
+          className="mt-24 pt-20 border-t border-neutral-100 grid grid-cols-1 lg:grid-cols-[1.1fr_1.9fr] gap-12 lg:gap-24 items-center"
         >
-          <p className="text-display-md font-black text-neutral-900 leading-tight tracking-tight mb-6">
-            {/* ── First sentence: fully static, never animated ── */}
-            &ldquo;We don&rsquo;t just extract minerals.{" "}
+          {/* Left: Prominent Executive Portrait */}
+          <div className="relative aspect-[4/5] lg:aspect-[0.85/1] overflow-hidden rounded-2xl bg-neutral-50 shadow-2xl">
+            <Image
+              src="/sk-thakur.png"
+              alt="S.K. Thakur - Chairman & Managing Director"
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 40vw"
+              priority
+            />
+          </div>
 
-            {/* ── Second sentence: each word animated by scroll scrub ── */}
-            {SPAN_WORDS.map((word, i) => (
-              <span
-                key={i}
-                ref={(el) => { wordRefs.current[i] = el; }}
-                // Inline style sets the base color; GSAP will override it
-                style={{ color: "#D1D5DB" }}
+          {/* Right: The Quote Content */}
+          <div className="relative">
+            {/* Large Decorative Quote Mark - Premium Editorial Style */}
+            <span className="absolute -top-16 -left-8 text-[14rem] font-serif text-neutral-50 leading-none select-none pointer-events-none -z-10 opacity-60">
+              &ldquo;
+            </span>
+            
+            <blockquote className="relative z-10">
+              <p 
+                ref={quoteRef}
+                className="text-3xl md:text-4xl lg:text-5xl font-black text-neutral-900 leading-[1.1] tracking-tight mb-12"
               >
-                {word}
-                {/* Re-insert natural space between words (except after last) */}
-                {i < SPAN_WORDS.length - 1 ? " " : ""}
-              </span>
-            ))}
-            &rdquo;
-          </p>
+                {/* ── First sentence: fully static ── */}
+                &ldquo;We don&rsquo;t just extract minerals.{" "}
 
-          <footer className="flex items-center gap-4">
-            <div className="w-10 h-10 border border-neutral-200 flex items-center justify-center">
-              <span className="text-xs font-bold">SK</span>
-            </div>
-            <div>
-              <cite className="not-italic text-sm font-bold text-neutral-900">
-                S.K. Thakur
-              </cite>
-              <p className="text-xs text-neutral-400">
-                Chairman &amp; Managing Director, SKT Global
+                {/* ── Second sentence: scroll-animated ── */}
+                {SPAN_WORDS.map((word, i) => (
+                  <span
+                    key={i}
+                    ref={(el) => { wordRefs.current[i] = el; }}
+                    style={{ color: "#D1D5DB" }}
+                    className="inline-block"
+                  >
+                    {word}
+                    {i < SPAN_WORDS.length - 1 ? "\u00A0" : ""}
+                  </span>
+                ))}
+                &rdquo;
               </p>
-            </div>
-          </footer>
-        </motion.blockquote>
+
+              <footer className="flex items-center gap-6">
+                {/* SK Brand Box - Moved to the left of the footer details */}
+                <div className="w-12 h-12 border border-neutral-200 flex items-center justify-center rounded-sm bg-white shadow-sm flex-shrink-0">
+                  <span className="text-xs font-bold text-neutral-900 tracking-tighter">SK</span>
+                </div>
+                <div>
+                  <cite className="not-italic text-lg font-bold text-neutral-900 block mb-0.5">
+                    S.K. Thakur
+                  </cite>
+                  <p className="text-xs md:text-sm text-neutral-400 font-medium tracking-wide uppercase">
+                    Chairman & Managing Director, SKT Global
+                  </p>
+                </div>
+              </footer>
+            </blockquote>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

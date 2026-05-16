@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { HeroSection } from "@/components/organisms/HeroSection";
 import { AboutSection } from "@/components/organisms/AboutSection";
+import { BlankSection } from "@/components/organisms/BlankSection";
 import { ServicesSection } from "@/components/organisms/ServicesSection";
 import { StatsSection } from "@/components/organisms/StatsSection";
 import { StorySection } from "@/components/organisms/StorySection";
@@ -27,6 +28,11 @@ export default function HomePage(): JSX.Element {
       {/* About + Timeline */}
       <Suspense fallback={<SectionSkeleton />}>
         <AboutSection />
+      </Suspense>
+
+      {/* Spacing Section */}
+      <Suspense fallback={<SectionSkeleton />}>
+        <BlankSection />
       </Suspense>
 
       {/* Services Grid */}
