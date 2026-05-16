@@ -1,8 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useInView } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import { motion, useInView } from "framer-motion";
 import { cn } from "@/lib/utils";
 import type { Stat } from "@/types";
 
@@ -12,13 +11,92 @@ interface StatCardProps {
   readonly className?: string;
 }
 
-export function StatCard({
-  stat,
-  index,
-  className,
-}: StatCardProps): JSX.Element {
+/**
+ * Detect decimal places from the original string, e.g. "2.5" → 1, "47" → 0
+ */
+function getDecimalPlaces(raw: string): number {
+  const cleaned = raw.replace(/,/g, "");
+  const dot = cleaned.indexOf(".");
+  return dot === -1 ? 0 : cleaned.length - dot - 1;
+}
+
+/**
+ * Format a live-counter number to match the original value's decimal places.
+ * Adds comma-separators for integers ≥ 1000.
+ */
+function fmt(value: number, dp: number): string {
+  if (dp > 0) return value.toFixed(dp);
+  return Math.round(value).toLocaleString("en-US");
+}
+
+export function StatCard({ stat, index, className }: StatCardProps): JSX.Element {
   const ref = useRef<HTMLDivElement>(null);
+  const valueRef = useRef<HTMLSpanElement>(null);
+  const cursorRef = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-10%" });
+  const hasAnimated = useRef(false);
+
+  // Parse numeric target from value string (handles "4200", "47", "2.5", etc.)
+  const rawNumeric = parseFloat(stat.value.replace(/,/g, ""));
+  const isText = isNaN(rawNumeric); // e.g. "Zero"
+  const dp = getDecimalPlaces(stat.value);
+
+  useEffect(() => {
+    if (!isInView || hasAnimated.current || !valueRef.current) return;
+    hasAnimated.current = true;
+
+    const el = valueRef.current;
+
+    // ── Typewriter for text values (e.g. "Zero") ──────────────────────────
+    if (isText) {
+      const chars = stat.value.split("");
+      const cursor = cursorRef.current;
+      el.textContent = "";
+      let i = 0;
+
+      // Initial delay matches the card's stagger so it fires after the fade-up
+      const startDelay = index * 120 + 300; // ms
+
+      setTimeout(() => {
+        const interval = setInterval(() => {
+          el.textContent += chars[i];
+          i++;
+          if (i >= chars.length) {
+            clearInterval(interval);
+            // Blink cursor briefly then hide it
+            if (cursor) {
+              setTimeout(() => {
+                cursor.style.opacity = "0";
+              }, 800);
+            }
+          }
+        }, 90); // ~90ms per character — crisp, premium pacing
+      }, startDelay);
+
+      return;
+    }
+
+    // ── Count-up for numeric values ───────────────────────────────────────
+    const target = rawNumeric;
+    const counter = { val: 0 };
+
+    (async () => {
+      const { default: gsap } = await import("gsap");
+
+      gsap.to(counter, {
+        val: target,
+        duration: 1.8,
+        delay: index * 0.12,
+        ease: "power4.out",
+        onUpdate() {
+          el.textContent = fmt(counter.val, dp);
+        },
+        onComplete() {
+          el.textContent = fmt(target, dp);
+        },
+      });
+    })();
+  }, [isInView, isText, stat.value, rawNumeric, dp, index]);
 
   return (
     <motion.div
@@ -36,27 +114,50 @@ export function StatCard({
         className
       )}
     >
-      {/* Value */}
+      {/* ── Value row ─────────────────────────────── */}
       <div className="flex items-baseline gap-1 mb-2">
         {stat.prefix && (
           <span className="text-2xl font-medium text-neutral-400">
             {stat.prefix}
           </span>
         )}
+
         <motion.span
           className="text-5xl md:text-6xl font-black text-neutral-900 tracking-tight leading-none"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={
-            isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }
-          }
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.92 }}
           transition={{
             duration: 0.5,
-            delay: index * 0.1 + 0.2,
+            delay: index * 0.1 + 0.15,
             ease: [0.34, 1.56, 0.64, 1],
           }}
         >
-          {stat.value}
+          {isText ? (
+            // Text values: typewriter fills characters into valueRef
+            <>
+              <span ref={valueRef} />
+              {/* Blinking cursor — fades out after typing completes */}
+              <span
+                ref={cursorRef}
+                aria-hidden="true"
+                className="inline-block w-[3px] h-[0.85em] bg-neutral-900 ml-[2px] align-middle"
+                style={{
+                  animation: "tw-blink 0.75s step-end infinite",
+                }}
+              />
+              <style>{`
+                @keyframes tw-blink {
+                  0%, 100% { opacity: 1; }
+                  50%       { opacity: 0; }
+                }
+              `}</style>
+            </>
+          ) : (
+            // Numeric values: GSAP counts up via ref
+            <span ref={valueRef}>0</span>
+          )}
         </motion.span>
+
         {stat.suffix && (
           <span className="text-2xl font-bold text-neutral-400">
             {stat.suffix}
@@ -64,12 +165,12 @@ export function StatCard({
         )}
       </div>
 
-      {/* Label */}
+      {/* ── Label ─────────────────────────────────── */}
       <h3 className="text-sm font-semibold text-neutral-900 tracking-widest uppercase mb-1">
         {stat.label}
       </h3>
 
-      {/* Description */}
+      {/* ── Description ───────────────────────────── */}
       {stat.description && (
         <p className="text-xs text-neutral-400 leading-relaxed">
           {stat.description}
