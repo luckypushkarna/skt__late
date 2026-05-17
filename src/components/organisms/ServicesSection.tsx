@@ -160,25 +160,25 @@ function SliderCard({ card, verticalOffset = 0 }: { card: typeof CARDS[0]; verti
 // ─── Main Section ─────────────────────────────────────────────────────────────
 
 export function ServicesSection(): JSX.Element {
-  const rowARef    = useRef<HTMLDivElement>(null);
-  const stageRef   = useRef<HTMLDivElement>(null);
-  const rafRef     = useRef<number>(0);
+  const rowARef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef<number>(0);
 
   useEffect(() => {
-    const rowA  = rowARef.current;
+    const rowA = rowARef.current;
     const stage = stageRef.current;
     if (!rowA || !stage) return;
 
-    const SPEED   = 0.55;          // base auto-scroll px/frame
+    const SPEED = 0.55;          // base auto-scroll px/frame
     const DRAG_FACTOR = 1.2;       // how sensitive drag feels
     const INERTIA = 0.88;          // drag inertia after release (0 = stop, 1 = never stop)
     const RESUME_EASE = 0.06;      // how quickly speed recovers on resume
 
-    let posA       = 0;
-    let paused     = false;
-    let dragging   = false;
+    let posA = 0;
+    let paused = false;
+    let dragging = false;
     let dragStartX = 0;
-    let velA       = 0;
+    let velA = 0;
     let currentSpeedA = SPEED;
 
     const halfA = rowA.scrollWidth / 2;
@@ -186,7 +186,7 @@ export function ServicesSection(): JSX.Element {
     // ── wrap helper ───────────────────────────────────────────────────────
     function wrap(pos: number, half: number, dir: 1 | -1) {
       if (dir === -1 && pos <= -half) return pos + half;
-      if (dir ===  1 && pos >=  half) return pos - half;
+      if (dir === 1 && pos >= half) return pos - half;
       if (pos > 0) return pos - half;
       if (pos < -half) return pos + half;
       return pos;
@@ -203,7 +203,7 @@ export function ServicesSection(): JSX.Element {
         posA = wrap(posA + velA, halfA, -1);
       } else if (paused && !dragging && Math.abs(velA) > 0.05) {
         velA *= INERTIA;
-        posA  = wrap(posA + velA, halfA, -1);
+        posA = wrap(posA + velA, halfA, -1);
       }
 
       rowA!.style.transform = `translate3d(${posA}px,0,0)`;
@@ -228,9 +228,9 @@ export function ServicesSection(): JSX.Element {
 
     // ── Drag ──────────────────────────────────────────────────────────────
     function onMouseDown(e: MouseEvent) {
-      dragging   = true;
+      dragging = true;
       dragStartX = e.clientX;
-      velA       = 0;
+      velA = 0;
       stage!.style.cursor = 'grabbing';
       e.preventDefault();
     }
@@ -252,7 +252,7 @@ export function ServicesSection(): JSX.Element {
     function onTouchStart(e: TouchEvent) {
       const touch = e.touches[0];
       if (!touch) return;
-      dragging   = true;
+      dragging = true;
       touchStartX = touch.clientX;
       velA = 0;
       paused = true;
@@ -273,23 +273,23 @@ export function ServicesSection(): JSX.Element {
 
     stage.addEventListener('mouseenter', onEnter);
     stage.addEventListener('mouseleave', onLeave);
-    stage.addEventListener('mousedown',  onMouseDown);
+    stage.addEventListener('mousedown', onMouseDown);
     window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseup',   onMouseUp);
+    window.addEventListener('mouseup', onMouseUp);
     stage.addEventListener('touchstart', onTouchStart, { passive: true });
-    stage.addEventListener('touchmove',  onTouchMove,  { passive: true });
-    stage.addEventListener('touchend',   onTouchEnd);
+    stage.addEventListener('touchmove', onTouchMove, { passive: true });
+    stage.addEventListener('touchend', onTouchEnd);
 
     return () => {
       cancelAnimationFrame(rafRef.current);
       stage.removeEventListener('mouseenter', onEnter);
       stage.removeEventListener('mouseleave', onLeave);
-      stage.removeEventListener('mousedown',  onMouseDown);
+      stage.removeEventListener('mousedown', onMouseDown);
       window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mouseup',   onMouseUp);
+      window.removeEventListener('mouseup', onMouseUp);
       stage.removeEventListener('touchstart', onTouchStart);
-      stage.removeEventListener('touchmove',  onTouchMove);
-      stage.removeEventListener('touchend',   onTouchEnd);
+      stage.removeEventListener('touchmove', onTouchMove);
+      stage.removeEventListener('touchend', onTouchEnd);
     };
   }, []);
 

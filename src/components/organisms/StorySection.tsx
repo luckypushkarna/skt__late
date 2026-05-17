@@ -199,16 +199,7 @@ export function StorySection(): JSX.Element {
           <span className="text-neutral-300">Different</span>
         </motion.h2>
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mt-6 text-sm text-neutral-400 max-w-md leading-relaxed"
-        >
-          Scroll to explore the four principles that define how we operate—
-          from the surface to the deepest tunnel.
-        </motion.p>
+
       </div>
 
       {/* ─── Sticky Two-Column Layout ────────────────────────────────────── */}
@@ -218,8 +209,8 @@ export function StorySection(): JSX.Element {
           {/* ── LEFT: Sticky Image Panel ──────────────────────────────────── */}
           <div
             ref={stickyRef}
-            className="hidden lg:block w-[48%] flex-shrink-0"
-            style={{ position: "sticky", top: "10vh", height: "80vh" }}
+            className="hidden lg:block w-[38%] flex-shrink-0"
+            style={{ position: "sticky", top: "15vh", height: "520px" }}
           >
             {/* Progress line - left edge */}
             <div
