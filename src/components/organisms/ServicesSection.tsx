@@ -97,7 +97,6 @@ const CARDS = [
 
 // Duplicate for seamless infinite loop
 const ROW_A = [...CARDS, ...CARDS];
-const ROW_B = [...CARDS, ...CARDS];
 
 // ─── Single Card ─────────────────────────────────────────────────────────────
 
@@ -207,7 +206,7 @@ export function ServicesSection(): JSX.Element {
         posA  = wrap(posA + velA, halfA, -1);
       }
 
-      rowA.style.transform = `translate3d(${posA}px,0,0)`;
+      rowA!.style.transform = `translate3d(${posA}px,0,0)`;
 
       rafRef.current = requestAnimationFrame(tick);
     }
@@ -217,13 +216,13 @@ export function ServicesSection(): JSX.Element {
     // ── Hover pause ───────────────────────────────────────────────────────
     function onEnter() {
       paused = true;
-      stage.style.cursor = 'grab';
+      stage!.style.cursor = 'grab';
     }
     function onLeave() {
       if (!dragging) {
         paused = false;
         currentSpeedA = 0;
-        stage.style.cursor = '';
+        stage!.style.cursor = '';
       }
     }
 
@@ -232,7 +231,7 @@ export function ServicesSection(): JSX.Element {
       dragging   = true;
       dragStartX = e.clientX;
       velA       = 0;
-      stage.style.cursor = 'grabbing';
+      stage!.style.cursor = 'grabbing';
       e.preventDefault();
     }
     function onMouseMove(e: MouseEvent) {
@@ -244,22 +243,26 @@ export function ServicesSection(): JSX.Element {
     function onMouseUp() {
       if (!dragging) return;
       dragging = false;
-      stage.style.cursor = paused ? 'grab' : '';
+      stage!.style.cursor = paused ? 'grab' : '';
       // velA now carries momentum — tick() will decay it
     }
 
     // ── Touch ─────────────────────────────────────────────────────────────
     let touchStartX = 0;
     function onTouchStart(e: TouchEvent) {
+      const touch = e.touches[0];
+      if (!touch) return;
       dragging   = true;
-      touchStartX = e.touches[0].clientX;
+      touchStartX = touch.clientX;
       velA = 0;
       paused = true;
     }
     function onTouchMove(e: TouchEvent) {
       if (!dragging) return;
-      const dx = (e.touches[0].clientX - touchStartX) * DRAG_FACTOR;
-      touchStartX = e.touches[0].clientX;
+      const touch = e.touches[0];
+      if (!touch) return;
+      const dx = (touch.clientX - touchStartX) * DRAG_FACTOR;
+      touchStartX = touch.clientX;
       velA = dx;
     }
     function onTouchEnd() {
@@ -363,7 +366,7 @@ export function ServicesSection(): JSX.Element {
             style={{ willChange: "transform" }}
           >
             {ROW_A.map((card, i) => (
-              <SliderCard key={`a-${i}`} card={card} verticalOffset={vertOffsets[i % 6]} />
+              <SliderCard key={`a-${i}`} card={card} verticalOffset={vertOffsets[i % 6] ?? 0} />
             ))}
           </div>
         </div>
