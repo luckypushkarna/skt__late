@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Wrench, Package, Truck, Shield, Network, Monitor, Users, Settings, TrendingUp, ShieldCheck, Building2, Globe } from "lucide-react";
 import Link from "next/link";
 import { JSX } from "react";
+import { OperationalScaleSection } from "./OperationalScaleSection";
 
 // ─── Card data ────────────────────────────────────────────────────────────────
 
@@ -372,8 +373,9 @@ export function ServicesSection(): JSX.Element {
   const vertOffsets = [0, -12, 8, -8, 12, 0];
 
   return (
-    <section
-      id="services"
+    <>
+      <section
+        id="services"
       className="bg-white overflow-hidden"
       aria-labelledby="services-heading"
       style={{ paddingTop: "96px", paddingBottom: "96px" }}
@@ -473,5 +475,9 @@ export function ServicesSection(): JSX.Element {
         </div>
       </motion.div>
     </section>
+
+    {/* Operational Scale Section */}
+    <OperationalScaleSection />
+  </>
   );
 }

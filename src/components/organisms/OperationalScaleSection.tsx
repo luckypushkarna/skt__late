@@ -8,7 +8,7 @@ import { STATS } from "@/lib/constants";
 
 export function OperationalScaleSection(): JSX.Element {
   return (
-    <section
+    <div
       id="scale"
       className="py-24 bg-white border-b border-neutral-100"
       aria-labelledby="scale-heading"
@@ -79,6 +79,6 @@ export function OperationalScaleSection(): JSX.Element {
           })}
         </div>
       </div>
-    </section>
+    </div>
   );
 }

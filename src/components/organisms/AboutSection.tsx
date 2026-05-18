@@ -84,7 +84,7 @@ export function AboutSection(): JSX.Element {
     <section
       ref={sectionRef}
       id="about"
-      className="relative py-section bg-white overflow-hidden"
+      className="relative pt-24 pb-24 bg-white overflow-hidden"
       aria-labelledby="about-heading"
     >
       <div className="max-w-screen-xl mx-auto px-6 lg:px-12">

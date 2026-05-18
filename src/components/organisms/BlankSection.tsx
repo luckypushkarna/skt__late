@@ -55,73 +55,77 @@ export function BlankSection(): JSX.Element {
            * Single scrubbed timeline.
            * Total duration = 10 units → maps linearly to scroll 0% → 100%.
            *
-           * Time → Scroll mapping:
-           *   0  → 0%
-           *   1  → 10%
-           *   3  → 30%
-           *   6  → 60%
-           *   10 → 100%
+           * Highly responsive and compact timeline:
+           *   0.0 - 1.5 (0% - 15% scroll): Layer 1 slides up and fades in.
+           *   1.5 - 3.5 (15% - 35% scroll): Minimal reading pause.
+           *   3.5 - 7.0 (35% - 70% scroll): Fast and minimal circle expansion portal.
+           *   7.0 - 10.0 (70% - 100% scroll): Section locks in completed state for interaction.
            */
           const tl = gsap.timeline({
             scrollTrigger: {
               trigger: containerRef.current,
-              start: "top top",
+              start: "top 30%",     // Starts when the top of section is 30% from the viewport top
               end: "bottom bottom",
-              scrub: 0.6,   // snappy scrub
+              scrub: 0.1,           // Instant, lag-free scrub response
             },
-            defaults: { ease: "none" }, // linear by default; eases specified per tween
+            defaults: { ease: "none" },
           });
 
-          // ── 0 → 0.8  : Section slides up and fades in (does not fade out)
+          // ── 0.0 → 1.5 : Layer 1 slides up and fades in
           tl.fromTo([contentRef.current, portalContainerRef.current],
             { opacity: 0, y: 40 },
-            { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" },
+            { opacity: 1, y: 0, duration: 1.5, ease: "power2.out" },
             0,
           );
 
-          // ── 0.8 → 2  : Core dot & glow disappear ─────────────────────────
-          tl.to([coreRef.current, glowRef.current],
-            { opacity: 0, scale: 0, duration: 0.6, ease: "power3.in" },
-            0.4,
-          );
-
-          // ── 0 → 1.5  : Scroll hint fades ─────────────────────────────────
+          // ── 0.0 → 1.5 : Scroll hint fades
           tl.to(hintRef.current,
-            { opacity: 0, duration: 0.6 },
+            { opacity: 0, duration: 1.5 },
             0,
           );
 
-          // ── 1.5 → 10 : Circle expands (scale 0.05 → 15) ────────────────────
-          // Base size is 400px, so 0.05 = 20px initial, 15 = 6000px final (razor-sharp edge)
+          // ── 3.5 → 4.2 : Core dot & glow disappear as portal opens
+          tl.to([coreRef.current, glowRef.current],
+            { opacity: 0, scale: 0, duration: 0.7, ease: "power3.in" },
+            3.5,
+          );
+
+          // ── 3.5 → 5.5 : Layer 1 fades out smoothly as portal expands
+          tl.to(contentRef.current,
+            { opacity: 0, duration: 2.0, ease: "power2.inOut" },
+            3.5,
+          );
+
+          // ── 3.5 → 7.0 : Circle expands (scale 0.05 → 15) - Fast and minimal
           tl.fromTo(circleRef.current,
             { scale: 0.05, opacity: 1 },
-            { scale: 15, duration: 5, ease: "power3.out" },
-            0.8,
+            { scale: 15, duration: 3.5, ease: "power2.out" },
+            3.5,
           );
 
-          // ── 1.5 → 4.5 : COLOR: deep red → light purple ───────────────────
+          // ── 3.5 → 5.2 : COLOR: deep red → light purple
           tl.to(circleRef.current,
             {
               backgroundColor: "#A78BFA",
-              duration: 1.8,
+              duration: 1.7,
             },
-            0.8,
+            3.5,
           );
 
-          // ── 4.5 → 10  : COLOR: light purple → deep dark blue ─────────────
+          // ── 5.2 → 7.0 : COLOR: light purple → deep dark blue
           tl.to(circleRef.current,
             {
               backgroundColor: "#0B0F19",
-              duration: 3,
+              duration: 1.8,
             },
-            2.6,
+            5.2,
           );
 
-          // ── 7 → 10   : Reveal content rises in (down to up) ──────────────
+          // ── 5.2 → 7.0 : Reveal content rises and fades in
           tl.fromTo(revealRef.current,
             { opacity: 0, y: 40 },
-            { opacity: 1, y: 0, duration: 1.5, ease: "power3.out" },
-            4.2,
+            { opacity: 1, y: 0, duration: 1.8, ease: "power2.out" },
+            5.2,
           );
 
           return () => tl.scrollTrigger?.kill();
@@ -152,7 +156,7 @@ export function BlankSection(): JSX.Element {
       ref={containerRef}
       id="operations-map"
       className="relative"
-      style={{ height: "250vh" }}
+      style={{ height: "130vh" }}
     >
       {/* ── Sticky viewport (pinned 100vh) ── */}
       <div className="sticky top-0 h-screen overflow-hidden bg-white">
@@ -215,29 +219,32 @@ export function BlankSection(): JSX.Element {
             opacity: 0,
           }}
         >
-          {/* Soft ambient glow ring — vanishes as circle grows */}
-          <div
-            ref={glowRef}
-            className="absolute rounded-full"
-            style={{
-              width: "56px",
-              height: "56px",
-              inset: "-18px",
-              background: "radial-gradient(circle, rgba(159,18,57,0.12) 0%, transparent 70%)",
-            }}
-          />
-
-          {/* Core indicator dot — springs in on mount, fades on scroll start */}
+          {/* Beacon/Pulse wrapper (attached to coreRef and glowRef for GSAP portal transition scale/fade) */}
           <div
             ref={coreRef}
-            className="relative rounded-full border-2 border-white"
+            className="relative flex items-center justify-center pointer-events-auto cursor-pointer"
             style={{
               width: "20px",
               height: "20px",
-              backgroundColor: "#9F1239",
               zIndex: 1,
             }}
-          />
+          >
+            {/* Absolute-positioned outer ring with continuous slow pulse animation */}
+            <div
+              ref={glowRef}
+              className="absolute rounded-full bg-rose-600/40 opacity-75 pointer-events-none"
+              style={{
+                width: "48px",
+                height: "48px",
+                animation: "ping 2.5s cubic-bezier(0, 0, 0.2, 1) infinite",
+              }}
+            />
+
+            {/* Solid, vibrant red center dot */}
+            <div
+              className="w-5 h-5 rounded-full bg-rose-600 border-2 border-white relative z-10 shadow-[0_0_15px_rgba(225,29,72,0.6)]"
+            />
+          </div>
 
           {/* ── THE PORTAL CIRCLE ──
               This single element scales from 20px → 3400px.
@@ -412,7 +419,7 @@ export function BlankSection(): JSX.Element {
                           fill={isNodeActive ? "#f43f5e" : "rgba(255,255,255,0.3)"}
                           stroke="#ffffff"
                           strokeWidth={isNodeActive ? 2 : 1}
-                          className="transition-all duration-300"
+                          className="transition-all duration-500 ease-out"
                         />
                         {/* Label */}
                         <text
@@ -423,7 +430,7 @@ export function BlankSection(): JSX.Element {
                           fontSize={isNodeActive ? "11px" : "9px"}
                           fontWeight={isNodeActive ? "bold" : "normal"}
                           letterSpacing="0.1em"
-                          className="transition-all duration-300 uppercase pointer-events-none select-none"
+                          className="transition-all duration-500 ease-out uppercase pointer-events-none select-none"
                         >
                           {node.label}
                         </text>

@@ -4,7 +4,6 @@ import { HeroSection } from "@/components/organisms/HeroSection";
 import { AboutSection } from "@/components/organisms/AboutSection";
 import { BlankSection } from "@/components/organisms/BlankSection";
 import { ServicesSection } from "@/components/organisms/ServicesSection";
-import { OperationalScaleSection } from "@/components/organisms/OperationalScaleSection";
 import { StatsSection } from "@/components/organisms/StatsSection";
 import { StorySection } from "@/components/organisms/StorySection";
 import { TeamSection } from "@/components/organisms/TeamSection";
@@ -39,11 +38,6 @@ export default function HomePage(): JSX.Element {
       {/* Services Grid */}
       <Suspense fallback={<SectionSkeleton />}>
         <ServicesSection />
-      </Suspense>
-
-      {/* Operational Scale */}
-      <Suspense fallback={<SectionSkeleton />}>
-        <OperationalScaleSection />
       </Suspense>
 
       {/* Stats */}

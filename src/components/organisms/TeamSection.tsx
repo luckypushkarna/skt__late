@@ -62,14 +62,14 @@ export function TeamSection(): JSX.Element {
           {TEAM_MEMBERS.map((member) => {
             // Mapping placeholder images for members
             const images: Record<string, string> = {
-              "sk-thakur": "/sk-thakur.png",
-              "rajesh-kumar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800",
-              "priya-sharma": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=800",
-              "michael-osei": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=800",
-              "sipho-dlamini": "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=800",
-              "kabwe-mwansa": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=800",
-              "elizabeth-zulu": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800",
-              "amit-patel": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=800",
+              "sk-thakur": "/unknown-leader.jpg",
+              "rajesh-kumar": "/unknown-leader.jpg",
+              "priya-sharma": "/unknown-leader.jpg",
+              "michael-osei": "/unknown-leader.jpg",
+              "sipho-dlamini": "/unknown-leader.jpg",
+              "kabwe-mwansa": "/unknown-leader.jpg",
+              "elizabeth-zulu": "/unknown-leader.jpg",
+              "amit-patel": "/unknown-leader.jpg",
             };
 
             // Custom editorial headings & focus actions modeled on the reference image
