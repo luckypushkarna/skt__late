@@ -122,17 +122,27 @@ export function StatsSection(): JSX.Element {
           });
         }
 
-        // ScrollTrigger typography highlight reveal
-        const highlightEl = sectionRef.current?.querySelector(".quote-highlight");
+        // ScrollTrigger typography highlight reveal (Word-by-Word Scroll Synchronization)
+        const highlightEl = sectionRef.current?.querySelector<HTMLSpanElement>(".quote-highlight");
         if (highlightEl) {
-          gsap.to(highlightEl, {
+          const words = highlightEl.innerText.split(/\s+/);
+          highlightEl.innerHTML = words
+            .map(
+              (w) =>
+                `<span class="quote-reveal-word text-neutral-300 inline-block mr-1.5" style="color: #D4D4D4">${w}</span>`
+            )
+            .join("");
+
+          const wordEls = highlightEl.querySelectorAll(".quote-reveal-word");
+          gsap.to(wordEls, {
             scrollTrigger: {
               trigger: highlightEl,
-              start: "top 92%", // Starts when quote enters the bottom of the viewport
-              end: "bottom 75%", // Fully solid black once it is comfortably in view
-              scrub: 0.5, // Ultra-smooth liquid scroll catch-up
+              start: "top 95%", // Starts right as the quote climbs into the view
+              end: "bottom 70%", // Ends when it reaches 70% height
+              scrub: 0.5, // Eased scrollbar scrubbing
             },
-            color: "#171717", // Solid premium black (neutral-900)
+            color: "#171717", // Transition color to solid premium black (neutral-900)
+            stagger: 0.08, // Word-by-word staggered reveal mapped to scrollbar!
             ease: "none",
           });
         }
