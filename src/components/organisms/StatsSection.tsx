@@ -408,27 +408,27 @@ export function StatsSection(): JSX.Element {
               <img
                 src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&auto=format&fit=crop&q=85"
                 alt="S.K. Thakur, Chairman"
-                className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
+                className="w-full h-full object-cover"
               />
             </div>
 
             {/* Quote text */}
-            <blockquote>
-              <p className="text-xl md:text-2xl lg:text-3xl font-black text-neutral-900 leading-[1.15] tracking-tight mb-5">
+            <div className="space-y-6">
+              <p className="text-xl md:text-2xl lg:text-3xl font-black text-neutral-900 leading-[1.15] tracking-tight">
                 &ldquo;We do not simply extract minerals from the earth. We extract{" "}
                 <span className="quote-highlight text-neutral-300">
                   the promise of a safer tomorrow from the dedication of our people.&rdquo;
                 </span>
               </p>
-              <footer>
-                <cite className="not-italic text-sm font-bold text-neutral-900 block">
+              <div>
+                <span className="text-sm font-bold text-neutral-900 block">
                   S.K. Thakur
-                </cite>
-                <p className="text-xs text-neutral-400 font-medium tracking-wide uppercase">
+                </span>
+                <span className="text-xs text-neutral-500 font-medium tracking-wide uppercase block mt-1">
                   Chairman &amp; Managing Director, SKT Global
-                </p>
-              </footer>
-            </blockquote>
+                </span>
+              </div>
+            </div>
           </div>
         </motion.div>
       </div>
