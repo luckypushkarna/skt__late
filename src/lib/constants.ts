@@ -182,6 +182,30 @@ export const TEAM_MEMBERS: ReadonlyArray<TeamMember> = [
     role: "VP – African Operations",
     bio: "Ghana-based operations head leading SKT's fastest-growing regional portfolio with deep community engagement expertise.",
   },
+  {
+    id: "sipho-dlamini",
+    name: "Sipho Dlamini",
+    role: "Chief Financial Officer",
+    bio: "Chartered Accountant with 20+ years of corporate finance leadership in multinational mining ventures and heavy infrastructure investments.",
+  },
+  {
+    id: "kabwe-mwansa",
+    name: "Kabwe Mwansa",
+    role: "VP – Safety & Environment",
+    bio: "A world-class HSE pioneer dedicated to achieving zero-harm workplace safety culture across deep underground operations in the Copperbelt.",
+  },
+  {
+    id: "elizabeth-zulu",
+    name: "Dr. Elizabeth Zulu",
+    role: "Director of Human Resources",
+    bio: "Organizational development expert leading human capital strategy, specialized local workforce training, and industrial relations in regional Africa.",
+  },
+  {
+    id: "amit-patel",
+    name: "Amit Patel",
+    role: "VP – Technical Services",
+    bio: "Geological modeling and shaft design engineering specialist with a stellar record of optimizing high-yield production assets globally.",
+  },
 ] as const;
 
 export const MILESTONES: ReadonlyArray<Milestone> = [
