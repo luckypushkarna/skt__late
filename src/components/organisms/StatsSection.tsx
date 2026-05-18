@@ -121,6 +121,21 @@ export function StatsSection(): JSX.Element {
             ease: "power3.out",
           });
         }
+
+        // ScrollTrigger typography highlight reveal
+        const highlightEl = sectionRef.current?.querySelector(".quote-highlight");
+        if (highlightEl) {
+          gsap.to(highlightEl, {
+            scrollTrigger: {
+              trigger: highlightEl,
+              start: "top 85%",
+              end: "top 60%",
+              scrub: true,
+            },
+            color: "#171717", // Solid premium black (neutral-900)
+            ease: "none",
+          });
+        }
       }, sectionRef);
     };
 
@@ -391,8 +406,9 @@ export function StatsSection(): JSX.Element {
             <blockquote>
               <p className="text-xl md:text-2xl lg:text-3xl font-black text-neutral-900 leading-[1.15] tracking-tight mb-5">
                 &ldquo;We do not simply extract minerals from the earth. We extract{" "}
-                <span className="text-neutral-300">the promise of a safer tomorrow</span>{" "}
-                from the dedication of our people.&rdquo;
+                <span className="quote-highlight text-neutral-300 transition-colors duration-500">
+                  the promise of a safer tomorrow from the dedication of our people.&rdquo;
+                </span>
               </p>
               <footer>
                 <cite className="not-italic text-sm font-bold text-neutral-900 block">
