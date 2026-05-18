@@ -378,10 +378,10 @@ export function StatsSection(): JSX.Element {
         >
           <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-8 lg:gap-16 items-center">
             {/* Chairman's premium executive portrait */}
-            <div className="flex-shrink-0 w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden border-2 border-white shadow-lg bg-neutral-100">
+            <div className="flex-shrink-0 w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-72 lg:h-72 rounded-2xl overflow-hidden shadow-2xl bg-neutral-200 border border-neutral-300/40">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=300&auto=format&fit=crop&q=85"
+                src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&auto=format&fit=crop&q=85"
                 alt="S.K. Thakur, Chairman"
                 className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
               />
