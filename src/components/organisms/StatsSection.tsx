@@ -156,7 +156,7 @@ export function StatsSection(): JSX.Element {
   // ── Stack position for each card given active index ─────────────────────
   const getStackStyle = (cardIndex: number) => {
     const steps = (cardIndex - active + PILLARS.length) % PILLARS.length;
-    const off = STACK_OFFSETS[steps];
+    const off = STACK_OFFSETS[steps] || { x: 0, y: 0, scale: 1, z: 0, opacity: 0 };
     return {
       transform: `translate(${off.x}px, ${off.y}px) scale(${off.scale})`,
       zIndex: off.z,
