@@ -98,15 +98,6 @@ export function TeamSection(): JSX.Element {
                     </h3>
                   </div>
                 </div>
-
-                {/* Talk Button - External to card per reference */}
-                <button 
-                  className="mt-6 mx-4 bg-neutral-900 text-white rounded-full py-4 text-[11px] font-extrabold uppercase tracking-[0.15em] flex items-center justify-center gap-3 transition-all duration-300 hover:bg-neutral-800 hover:scale-[1.02] shadow-lg"
-                  aria-label={`Talk with ${member.name}`}
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                  Talk With {member.name.split(" ")[0]}
-                </button>
               </motion.div>
             );
           })}
