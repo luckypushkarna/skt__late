@@ -157,10 +157,22 @@ export function StatsSection(): JSX.Element {
   const getStackStyle = (cardIndex: number) => {
     const steps = (cardIndex - active + PILLARS.length) % PILLARS.length;
     const off = STACK_OFFSETS[steps] || { x: 0, y: 0, scale: 1, z: 0, opacity: 0 };
+    
+    // Exact 3D tilt angles modeled from the reference image:
+    // Negative Y-rotation rotates it slightly towards the left
+    // Positive X-rotation rotates it slightly down (showing the top surface)
+    // Positive Z-rotation skews it slightly clockwise
+    // Back stacked cards get flatter angles for a clean layered look
+    const rX = 6 - steps * 1;
+    const rY = -12 + steps * 2;
+    const rZ = 2 - steps * 0.4;
+    const translateZ = (4 - steps) * 12; // Z-axis parallax depth stepping
+
     return {
-      transform: `translate(${off.x}px, ${off.y}px) scale(${off.scale})`,
+      transform: `perspective(1200px) rotateX(${rX}deg) rotateY(${rY}deg) rotateZ(${rZ}deg) translate3d(${off.x}px, ${off.y}px, ${translateZ}px) scale(${off.scale})`,
       zIndex: off.z,
       opacity: off.opacity,
+      transformStyle: "preserve-3d" as const,
     };
   };
 
@@ -310,8 +322,16 @@ export function StatsSection(): JSX.Element {
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => { setPaused(false); startAuto(); }}
           >
-            {/* Stack container — cards are absolutely stacked */}
-            <div className="relative" style={{ width: "360px", height: "440px" }}>
+            {/* Stack container — cards are absolutely stacked with 3D perspective */}
+            <div 
+              className="relative" 
+              style={{ 
+                width: "360px", 
+                height: "440px",
+                perspective: "1200px",
+                transformStyle: "preserve-3d"
+              }}
+            >
 
               {/* Render all 5 cards, stacked */}
               {PILLARS.map((p, i) => {
@@ -327,8 +347,8 @@ export function StatsSection(): JSX.Element {
                       ...stackStyle,
                       transition: "transform 0.65s cubic-bezier(0.16,1,0.3,1), opacity 0.55s ease, box-shadow 0.45s ease",
                       boxShadow: isActive
-                        ? "0 32px 80px rgba(0,0,0,0.22), 0 8px 24px rgba(0,0,0,0.12)"
-                        : "0 8px 24px rgba(0,0,0,0.10)",
+                        ? "25px 25px 50px rgba(0,0,0,0.26), 10px 10px 20px rgba(0,0,0,0.12)"
+                        : "10px 10px 30px rgba(0,0,0,0.08)",
                     }}
                   >
                     {/* Photo */}
@@ -345,8 +365,33 @@ export function StatsSection(): JSX.Element {
                       }}
                     />
 
+                    {/* Top capsule pill — premium glassmorphism (matches "Watch Our Story" pill) */}
+                    <AnimatePresence>
+                      {isActive && (
+                        <motion.div
+                          key={`pill-${i}`}
+                          initial={{ opacity: 0, y: -12 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -6 }}
+                          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                          className="absolute top-6 left-6 flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white shadow-sm cursor-pointer hover:bg-white/20 transition-all duration-300 z-30"
+                        >
+                          <svg
+                            className="w-3 h-3 fill-current text-white"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                          <span className="text-[9px] font-black uppercase tracking-widest">
+                            Watch Our Story
+                          </span>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
                     {/* Bottom gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-neutral-950/20 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/85 via-neutral-950/20 to-transparent" />
 
                     {/* Bottom label — only on active */}
                     <AnimatePresence>
