@@ -24,6 +24,7 @@ const CARDS = [
     title: "Strategic Warehousing",
     desc: "Centralised warehousing and inventory systems designed to maintain continuous operational readiness backed by a spare parts inventory valued at over US$3M.",
     tags: ["US$3M+ Inventory", "Spare Parts", "Zero Downtime"],
+    bgImage: "https://picsum.photos/seed/skt2/800/1200",
   },
   {
     num: "03",
@@ -31,6 +32,7 @@ const CARDS = [
     title: "Mechanised Fleet",
     desc: "A world-class mechanised underground mining fleet including loaders, mine trucks, drill rigs, boomers, bolters, and advanced support equipment.",
     tags: ["Drill Rigs", "Mine Trucks", "Loaders & Bolters"],
+    bgImage: "https://picsum.photos/seed/skt3/800/1200",
   },
   {
     num: "04",
@@ -38,6 +40,7 @@ const CARDS = [
     title: "Rescue Systems",
     desc: "Advanced underground safety and emergency response infrastructure with integrated rescue chambers, monitoring systems, and preparedness protocols.",
     tags: ["Rescue Chambers", "Emergency Protocol", "Live Monitoring"],
+    bgImage: "https://picsum.photos/seed/skt4/800/1200",
   },
   {
     num: "05",
@@ -45,6 +48,7 @@ const CARDS = [
     title: "Logistics Network",
     desc: "An interconnected logistics ecosystem enabling continuous workforce mobility, equipment deployment, material handling, and uninterrupted production flow.",
     tags: ["Material Handling", "Fleet Dispatch", "Workforce Mobility"],
+    bgImage: "https://picsum.photos/seed/skt5/800/1200",
   },
   {
     num: "06",
@@ -52,6 +56,7 @@ const CARDS = [
     title: "Operational Command",
     desc: "A unified operational management system integrating engineering, mining, maintenance, logistics, and oversight into one coordinated command infrastructure.",
     tags: ["Unified Control", "Production Planning", "Workforce Allocation"],
+    bgImage: "https://picsum.photos/seed/skt6/800/1200",
   },
   {
     num: "07",
@@ -59,6 +64,7 @@ const CARDS = [
     title: "Workforce Facilities",
     desc: "Purpose-built workforce infrastructure for local and international teams, including accommodation, transportation, welfare support, and 24-hour catering.",
     tags: ["Accommodation", "Catering 24/7", "Welfare Support"],
+    bgImage: "https://picsum.photos/seed/skt7/800/1200",
   },
   {
     num: "08",
@@ -66,6 +72,7 @@ const CARDS = [
     title: "Engineering & Maintenance",
     desc: "Dedicated engineering systems ensuring equipment reliability and continuous underground performance through preventive maintenance and rapid intervention.",
     tags: ["Preventive Maint.", "Max Availability", "Specialised Teams"],
+    bgImage: "https://picsum.photos/seed/skt8/800/1200",
   },
   {
     num: "09",
@@ -73,6 +80,7 @@ const CARDS = [
     title: "Production Development",
     desc: "Accelerated underground mine development focused on long-term production growth and sustainability through mechanisation and modern mining methodologies.",
     tags: ["Mechanisation", "Growth Strategy", "Sustainability"],
+    bgImage: "https://picsum.photos/seed/skt9/800/1200",
   },
   {
     num: "10",
@@ -80,6 +88,7 @@ const CARDS = [
     title: "Safety & Compliance",
     desc: "A safety-first operational framework embedded across every aspect of underground mining with rigorous compliance, training, and workforce protection protocols.",
     tags: ["Zero Harm", "Compliance Systems", "Continuous Training"],
+    bgImage: "https://picsum.photos/seed/skt10/800/1200",
   },
   {
     num: "11",
@@ -87,6 +96,7 @@ const CARDS = [
     title: "Infrastructure Systems",
     desc: "A large-scale operational ecosystem including workshops, offices, warehousing, utility systems, transportation networks, and integrated support infrastructure.",
     tags: ["Utility Systems", "Workshops", "Support Infra"],
+    bgImage: "https://picsum.photos/seed/skt11/800/1200",
   },
   {
     num: "12",
@@ -94,6 +104,7 @@ const CARDS = [
     title: "Future Expansion",
     desc: "SKT Global is positioning for regional expansion through modernisation, operational scale, and strategic investment across multiple mining regions in Africa.",
     tags: ["Africa Expansion", "Scale-Up", "New Regions"],
+    bgImage: "https://picsum.photos/seed/skt12/800/1200",
   },
 ];
 
@@ -108,7 +119,7 @@ function SliderCard({ card, verticalOffset = 0 }: { card: typeof CARDS[0]; verti
 
   return (
     <div
-      className={`group relative flex-shrink-0 w-[420px] h-[642px] mx-3 rounded-[32px] p-9 cursor-default select-none overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+      className={`group relative flex-shrink-0 w-[350px] h-[520px] mx-3 rounded-[24px] p-7 cursor-default select-none overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
         hasBg 
           ? "text-white bg-neutral-950 border border-white/10" 
           : "bg-white text-neutral-900 border border-neutral-100/70"
@@ -158,15 +169,15 @@ function SliderCard({ card, verticalOffset = 0 }: { card: typeof CARDS[0]; verti
 
       {/* Ghost Number / Top Right Layout */}
       {!hasBg && (
-        <span className="absolute top-8 right-9 text-7xl font-black text-neutral-100/60 select-none pointer-events-none transition-colors duration-300">
+        <span className="absolute top-6 right-7 text-6xl font-black text-neutral-100/60 select-none pointer-events-none transition-colors duration-300">
           {card.num}
         </span>
       )}
 
       {/* Top Left Layout - Large elegant Icon container for Light Cards */}
       {!hasBg && (
-        <div className="absolute top-8 left-9 w-14 h-14 flex items-center justify-center rounded-2xl bg-neutral-50 border border-neutral-100 text-neutral-800 transition-all duration-300 group-hover:scale-105">
-          <Icon size={24} strokeWidth={1.5} />
+        <div className="absolute top-6 left-7 w-12 h-12 flex items-center justify-center rounded-2xl bg-neutral-50 border border-neutral-100 text-neutral-800 transition-all duration-300 group-hover:scale-105">
+          <Icon size={20} strokeWidth={1.5} />
         </div>
       )}
 
@@ -174,33 +185,33 @@ function SliderCard({ card, verticalOffset = 0 }: { card: typeof CARDS[0]; verti
       <div className="relative z-10 flex flex-col justify-end h-full">
         {/* Dynamic Icon above Title for Dark Cards */}
         {hasBg && (
-          <div className="w-12 h-12 flex items-center justify-center rounded-2xl mb-4 bg-white/10 border border-white/10 text-white backdrop-blur-sm transition-all duration-300 group-hover:scale-105">
-            <Icon size={20} className="text-white" strokeWidth={1.5} />
+          <div className="w-10 h-10 flex items-center justify-center rounded-xl mb-3.5 bg-white/10 border border-white/10 text-white backdrop-blur-sm transition-all duration-300 group-hover:scale-105">
+            <Icon size={18} className="text-white" strokeWidth={1.5} />
           </div>
         )}
 
         {/* Text Area */}
         <h3 
-          className={`text-2xl md:text-3xl font-bold tracking-tight mb-3 transition-colors duration-300 ${
+          className={`text-xl md:text-2xl font-bold tracking-tight mb-2 transition-colors duration-300 ${
             hasBg ? "text-white" : "text-neutral-900"
           }`}
         >
           {card.title}
         </h3>
         <p 
-          className={`text-sm leading-relaxed mb-6 max-w-[340px] transition-colors duration-300 ${
-            hasBg ? "text-neutral-200/90" : "text-neutral-500"
+          className={`text-xs leading-relaxed mb-4 max-w-[280px] transition-colors duration-300 ${
+            hasBg ? "text-neutral-300" : "text-neutral-500"
           }`}
         >
           {card.desc}
         </p>
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-2 mb-8">
+        <div className="flex flex-wrap gap-1.5 mb-6">
           {card.tags.map((tag) => (
             <span
               key={tag}
-              className={`text-[11px] font-semibold tracking-wider px-3.5 py-1.5 rounded-full uppercase transition-all duration-300 ${
+              className={`text-[10px] font-semibold tracking-wider px-2.5 py-1 rounded-full uppercase transition-all duration-300 ${
                 hasBg
                   ? "text-neutral-200 bg-white/10 border border-white/5 backdrop-blur-sm group-hover:bg-white/15"
                   : "text-neutral-500 bg-neutral-50 border border-neutral-100"
@@ -213,7 +224,7 @@ function SliderCard({ card, verticalOffset = 0 }: { card: typeof CARDS[0]; verti
 
         {/* Action Button matching Santorini/Swiss Chalet style */}
         <button 
-          className={`w-full font-bold py-4 rounded-full transition-all duration-300 text-sm uppercase tracking-wider ${
+          className={`w-full font-bold py-3 rounded-full transition-all duration-300 text-xs uppercase tracking-wider ${
             hasBg 
               ? "bg-white hover:bg-neutral-100 text-neutral-950 shadow-lg" 
               : "border border-neutral-200 hover:bg-neutral-900 hover:text-white hover:border-neutral-900 text-neutral-900"
@@ -369,8 +380,8 @@ export function ServicesSection(): JSX.Element {
     };
   }, []);
 
-  // Alternating vertical offsets for floating depth effect
-  const vertOffsets = [0, -12, 8, -8, 12, 0];
+  // Removing alternating vertical offsets to keep all cards perfectly aligned
+  const vertOffsets = [0, 0, 0, 0, 0, 0];
 
   return (
     <>

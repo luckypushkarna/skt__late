@@ -3,8 +3,6 @@ import { CareersHero } from "@/components/organisms/careers/CareersHero";
 import { WhyJoinSection } from "@/components/organisms/careers/WhyJoinSection";
 import { CareersCategories } from "@/components/organisms/careers/CareersCategories";
 import { JobOpenings } from "@/components/organisms/careers/JobOpenings";
-import { LifeAtSKT } from "@/components/organisms/careers/LifeAtSKT";
-import { BenefitsSection } from "@/components/organisms/careers/BenefitsSection";
 import { ApplicationProcess } from "@/components/organisms/careers/ApplicationProcess";
 import { CareersCTA } from "@/components/organisms/careers/CareersCTA";
 import { generateMetadata } from "@/lib/seo";
@@ -29,12 +27,6 @@ export default function CareersPage(): JSX.Element {
 
       {/* Real-time Filterable Jobs Grid */}
       <JobOpenings />
-
-      {/* Narrative Documentaries (Life at SKT) */}
-      <LifeAtSKT />
-
-      {/* Premium Benefit Cards */}
-      <BenefitsSection />
 
       {/* Recruitment Pipeline Step Timeline */}
       <ApplicationProcess />

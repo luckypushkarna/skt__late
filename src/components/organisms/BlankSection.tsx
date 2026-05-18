@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
-import Image from "next/image";
 import { JSX } from "react";
 import { Layers, MapPin, Compass } from "lucide-react";
 
@@ -9,11 +8,8 @@ import { Layers, MapPin, Compass } from "lucide-react";
  * Cinematic GSAP scroll-driven expanding circle transition.
  *
  * Color journey (directly tied to scroll):
- *   0%  – 30% : Deep red     (#9F1239)
- *   30% – 60% : Light purple (#A78BFA)
- *   60% – 100%: Light blue   (#60A5FA)
- *
- * The revealed section background seamlessly matches the final blue state.
+ *   0%  – 50% : Crimson      (#E11D48)
+ *   50% – 100%: Deep Navy    (#0B0F19)
  */
 export function BlankSection(): JSX.Element {
   // ─── States ──────────────────────────────────────────────────────────────────
@@ -30,12 +26,15 @@ export function BlankSection(): JSX.Element {
   // ─── Refs ────────────────────────────────────────────────────────────────────
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const circleRef = useRef<HTMLDivElement>(null);
-  const coreRef = useRef<HTMLDivElement>(null);
-  const glowRef = useRef<HTMLDivElement>(null);
+  const copyRef = useRef<HTMLDivElement>(null);
+  const mapPathRef = useRef<SVGGElement>(null);
+  
+  // Using SVG elements for mathematical precision scaling
+  const circleRef = useRef<SVGCircleElement>(null);
+  const coreRef = useRef<SVGGElement>(null);
+  
   const revealRef = useRef<HTMLDivElement>(null);
   const hintRef = useRef<HTMLDivElement>(null);
-  const portalContainerRef = useRef<HTMLDivElement>(null);
 
   // ─── GSAP ScrollTrigger Setup ─────────────────────────────────────────────
   useEffect(() => {
@@ -49,18 +48,8 @@ export function BlankSection(): JSX.Element {
       ctx = gsap.context(() => {
         const mm = gsap.matchMedia();
 
-        // ── Full animation (no reduced-motion preference) ───────────────────
-        mm.add("(prefers-reduced-motion: no-preference)", () => {
-          /**
-           * Single scrubbed timeline.
-           * Total duration = 10 units → maps linearly to scroll 0% → 100%.
-           *
-           * Highly responsive and compact timeline:
-           *   0.0 - 1.5 (0% - 15% scroll): Layer 1 slides up and fades in.
-           *   1.5 - 3.5 (15% - 35% scroll): Minimal reading pause.
-           *   3.5 - 7.0 (35% - 70% scroll): Fast and minimal circle expansion portal.
-           *   7.0 - 10.0 (70% - 100% scroll): Section locks in completed state for interaction.
-           */
+        // ── Full desktop animation (min-width: 1024px) ───────────────────
+        mm.add("(min-width: 1024px) and (prefers-reduced-motion: no-preference)", () => {
           const tl = gsap.timeline({
             scrollTrigger: {
               trigger: containerRef.current,
@@ -72,7 +61,7 @@ export function BlankSection(): JSX.Element {
           });
 
           // ── 0.0 → 1.5 : Layer 1 slides up and fades in
-          tl.fromTo([contentRef.current, portalContainerRef.current],
+          tl.fromTo(contentRef.current,
             { opacity: 0, y: 40 },
             { opacity: 1, y: 0, duration: 1.5, ease: "power2.out" },
             0,
@@ -84,41 +73,28 @@ export function BlankSection(): JSX.Element {
             0,
           );
 
-          // ── 3.5 → 4.2 : Core dot & glow disappear as portal opens
-          tl.to([coreRef.current, glowRef.current],
-            { opacity: 0, scale: 0, duration: 0.7, ease: "power3.in" },
+          // ── 3.5 → 4.2 : Core dot disappears as portal opens
+          tl.to(coreRef.current,
+            { opacity: 0, scale: 0, transformOrigin: "center", duration: 0.7, ease: "power3.in" },
             3.5,
           );
 
-          // ── 3.5 → 5.5 : Layer 1 fades out smoothly as portal expands
-          tl.to(contentRef.current,
+          // ── 3.5 → 5.5 : Layer 1 Text and Base Map fades out smoothly as portal expands
+          tl.to([copyRef.current, mapPathRef.current],
             { opacity: 0, duration: 2.0, ease: "power2.inOut" },
             3.5,
           );
 
-          // ── 3.5 → 7.0 : Circle expands (scale 0.05 → 15) - Fast and minimal
-          tl.fromTo(circleRef.current,
-            { scale: 0.05, opacity: 1 },
-            { scale: 15, duration: 3.5, ease: "power2.out" },
+          // ── 3.5 → 7.0 : Circle expands (r 0 -> 2500)
+          tl.to(circleRef.current,
+            { attr: { r: 2500 }, duration: 3.5, ease: "power2.out" },
             3.5,
           );
 
-          // ── 3.5 → 5.2 : COLOR: deep red → light purple
+          // ── 3.5 → 7.0 : COLOR transition: Crimson -> Deep Navy
           tl.to(circleRef.current,
-            {
-              backgroundColor: "#A78BFA",
-              duration: 1.7,
-            },
+            { fill: "#0B0F19", duration: 3.5 },
             3.5,
-          );
-
-          // ── 5.2 → 7.0 : COLOR: light purple → deep dark blue
-          tl.to(circleRef.current,
-            {
-              backgroundColor: "#0B0F19",
-              duration: 1.8,
-            },
-            5.2,
           );
 
           // ── 5.2 → 7.0 : Reveal content rises and fades in
@@ -131,12 +107,12 @@ export function BlankSection(): JSX.Element {
           return () => tl.scrollTrigger?.kill();
         });
 
-        // ── Reduced motion: show static content, skip animation ─────────────
-        mm.add("(prefers-reduced-motion: reduce)", () => {
+        // ── Mobile / Reduced motion: stacked vertical layout fallback ─────────────
+        mm.add("(max-width: 1023px), (prefers-reduced-motion: reduce)", () => {
           gsap.set(contentRef.current, { opacity: 1 });
-          gsap.set(revealRef.current, { opacity: 0 });
-          gsap.set(circleRef.current, { opacity: 0 });
-          gsap.set(portalContainerRef.current, { opacity: 1 });
+          gsap.set(revealRef.current, { opacity: 1 });
+          gsap.set(circleRef.current, { opacity: 0 }); // Hide expanding circle, fallback uses CSS background
+          gsap.set(hintRef.current, { opacity: 0 });
         });
       }, containerRef);
     };
@@ -148,33 +124,27 @@ export function BlankSection(): JSX.Element {
 
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
-    /**
-     * 500vh tall container — the extra height gives the scroll-linked
-     * animation plenty of room to play out at a relaxed, cinematic pace.
-     */
     <div
       ref={containerRef}
       id="operations-map"
-      className="relative"
-      style={{ height: "130vh" }}
+      className="relative h-auto lg:h-[130vh]"
     >
-      {/* ── Sticky viewport (pinned 100vh) ── */}
-      <div className="sticky top-0 h-screen overflow-hidden bg-white">
+      {/* ── Viewport container ── */}
+      <div className="relative lg:sticky top-0 h-auto lg:h-screen overflow-hidden bg-white flex flex-col lg:block">
 
         {/* ══════════════════════════════════════════════════════════════════
             LAYER 1 — Initial editorial content
-            (fades in on enter, fades out as circle begins expanding)
         ══════════════════════════════════════════════════════════════════ */}
         <div
           ref={contentRef}
-          className="absolute inset-0 flex items-center opacity-0"
+          className="relative lg:absolute inset-0 flex items-center lg:opacity-0 py-16 lg:py-0"
           style={{ zIndex: 10 }}
         >
           <div className="max-w-screen-xl mx-auto px-6 lg:px-12 w-full">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
               {/* Left: Copy */}
-              <div>
+              <div ref={copyRef}>
                 <h3 className="text-sm font-bold tracking-[0.25em] text-neutral-400 uppercase mb-5">
                   Underground Operations
                 </h3>
@@ -187,93 +157,55 @@ export function BlankSection(): JSX.Element {
                 </p>
               </div>
 
-              {/* Right: Operations image */}
-              <div className="relative w-full" style={{ aspectRatio: "1" }}>
-                <Image
-                  src="/zambia-operations-nobgs.png"
-                  alt="SKT Global mining operations in Zambia"
-                  fill
-                  className="object-contain object-right"
-                  priority
-                />
+              {/* Right: SVG Operations Map */}
+              <div className="relative w-full aspect-square flex items-center justify-center">
+                <svg
+                  viewBox="0 0 800 500"
+                  className="w-full h-full object-contain overflow-visible"
+                >
+                  <g ref={mapPathRef}>
+                    {/* Detailed map image */}
+                    <image
+                      href="/zambia-map-detailed.png"
+                      x="0"
+                      y="0"
+                      width="800"
+                      height="500"
+                      preserveAspectRatio="xMidYMid contain"
+                    />
+                  </g>
+                  
+                  {/* LAYER 2 — The expanding circle portal (starts small, hidden behind dot) */}
+                  <circle
+                    ref={circleRef}
+                    cx="440"
+                    cy="240"
+                    r="0"
+                    fill="#E11D48" // Crimson
+                  />
+                  
+                  {/* The interactive dot/pin placed precisely in the SVG */}
+                  <g ref={coreRef} className="map-pin" transform="translate(440, 240)" style={{ cursor: "pointer" }}>
+                    {/* Pulsing Outer Ring */}
+                    <circle r="20" fill="transparent" stroke="#E11D48" strokeWidth="6" className="animate-pulse" />
+                    {/* Solid Inner Dot */}
+                    <circle r="8" fill="#E11D48" />
+                  </g>
+                </svg>
               </div>
             </div>
           </div>
         </div>
 
         {/* ══════════════════════════════════════════════════════════════════
-            LAYER 2 — The expanding circle portal
-            Origin: positioned over the operational marker on the image.
-            Expands via GSAP scale to fill the entire viewport.
-        ══════════════════════════════════════════════════════════════════ */}
-        <div
-          ref={portalContainerRef}
-          className="absolute pointer-events-none"
-          style={{
-            top: "63%",
-            right: "31.5%",
-            zIndex: 40,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            opacity: 0,
-          }}
-        >
-          {/* Beacon/Pulse wrapper (attached to coreRef and glowRef for GSAP portal transition scale/fade) */}
-          <div
-            ref={coreRef}
-            className="relative flex items-center justify-center pointer-events-auto cursor-pointer"
-            style={{
-              width: "20px",
-              height: "20px",
-              zIndex: 1,
-            }}
-          >
-            {/* Absolute-positioned outer ring with continuous slow pulse animation */}
-            <div
-              ref={glowRef}
-              className="absolute rounded-full bg-rose-600/40 opacity-75 pointer-events-none"
-              style={{
-                width: "48px",
-                height: "48px",
-                animation: "ping 2.5s cubic-bezier(0, 0, 0.2, 1) infinite",
-              }}
-            />
-
-            {/* Solid, vibrant red center dot */}
-            <div
-              className="w-5 h-5 rounded-full bg-rose-600 border-2 border-white relative z-10 shadow-[0_0_15px_rgba(225,29,72,0.6)]"
-            />
-          </div>
-
-          {/* ── THE PORTAL CIRCLE ──
-              This single element scales from 20px → 3400px.
-              backgroundColor interpolates: red → purple → blue.
-              GPU-accelerated via will-change: transform. ── */}
-          <div
-            ref={circleRef}
-            className="absolute rounded-full"
-            style={{
-              width: "400px",
-              height: "400px",
-              backgroundColor: "#9F1239",
-              transformOrigin: "center center",
-              transform: "scale(0.05)",
-            }}
-          />
-        </div>
-
-        {/* ══════════════════════════════════════════════════════════════════
             LAYER 3 — Revealed content
-            Sits above the expanding circle (z-50), fades in during last 30%
-            of scroll. Background matches final blue circle state.
         ══════════════════════════════════════════════════════════════════ */}
         <div
           ref={revealRef}
-          className="absolute inset-0 flex flex-col items-center justify-center pointer-events-auto opacity-0"
+          className="relative lg:absolute inset-0 flex flex-col items-center justify-center lg:opacity-0 bg-[#0B0F19] lg:bg-transparent py-16 lg:py-0"
           style={{ zIndex: 50 }}
         >
-          <div className="w-full max-w-6xl mx-auto px-6 lg:px-12 flex flex-col justify-between h-[85vh] text-white">
+          <div className="w-full max-w-6xl mx-auto px-6 lg:px-12 flex flex-col justify-between lg:h-[85vh] text-white gap-8 lg:gap-0">
             
             {/* Header */}
             <div className="flex items-center justify-between border-b border-white/10 pb-6 w-full select-none">
@@ -285,11 +217,10 @@ export function BlankSection(): JSX.Element {
                   SKT GLOBAL MINING HUB
                 </h2>
               </div>
-
             </div>
 
             {/* Main Interactive Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center my-auto w-full">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center lg:my-auto w-full">
               
               {/* Left Menu - 4 Cols */}
               <div className="lg:col-span-4 flex flex-col gap-3 bg-black/25 backdrop-blur-md p-6 rounded-2xl border border-white/5 w-full">
@@ -331,7 +262,7 @@ export function BlankSection(): JSX.Element {
               </div>
 
               {/* Central Map - 8 Cols */}
-              <div className="lg:col-span-8 relative flex items-center justify-center p-4 bg-black/10 rounded-3xl border border-white/5 h-[45vh] lg:h-[50vh] overflow-hidden w-full">
+              <div className="lg:col-span-8 relative flex items-center justify-center p-4 bg-black/10 rounded-3xl border border-white/5 h-[400px] lg:h-[50vh] overflow-hidden w-full">
                 {/* Subtle tech background grid pattern */}
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.03)_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
                 
@@ -339,12 +270,12 @@ export function BlankSection(): JSX.Element {
                   viewBox="0 0 800 500"
                   className="w-full h-full object-contain drop-shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
                 >
-                  {/* Glowing connecting routes */}
+                  {/* Glowing connecting routes - Using Crimson instead of Purple */}
                   <g opacity="0.6">
                     {/* Path 1: Copperbelt to Kitwe */}
                     <path
-                      d="M 280 140 Q 320 160 350 180"
-                      stroke="rgba(167, 139, 250, 0.4)"
+                      d="M 440 240 Q 410 210 350 180"
+                      stroke="rgba(225, 29, 72, 0.5)"
                       strokeWidth="2"
                       strokeDasharray="4 4"
                       fill="none"
@@ -352,7 +283,7 @@ export function BlankSection(): JSX.Element {
                     {/* Path 2: Kitwe to Ndola */}
                     <path
                       d="M 350 180 Q 390 190 420 200"
-                      stroke="rgba(167, 139, 250, 0.4)"
+                      stroke="rgba(225, 29, 72, 0.5)"
                       strokeWidth="2"
                       strokeDasharray="4 4"
                       fill="none"
@@ -360,7 +291,7 @@ export function BlankSection(): JSX.Element {
                     {/* Path 3: Ndola to Lusaka */}
                     <path
                       d="M 420 200 Q 450 270 460 330"
-                      stroke="rgba(167, 139, 250, 0.4)"
+                      stroke="rgba(225, 29, 72, 0.5)"
                       strokeWidth="2"
                       strokeDasharray="4 4"
                       fill="none"
@@ -368,30 +299,27 @@ export function BlankSection(): JSX.Element {
                     {/* Path 4: Lusaka to Regional Exploration */}
                     <path
                       d="M 460 330 Q 520 290 580 240"
-                      stroke="rgba(167, 139, 250, 0.4)"
+                      stroke="rgba(225, 29, 72, 0.5)"
                       strokeWidth="2"
                       strokeDasharray="4 4"
                       fill="none"
                     />
                   </g>
 
-                  {/* Stylized Zambia boundary shape */}
-                  <path
-                    d="M 240 100 Q 300 70 380 90 T 500 130 T 600 180 T 650 280 T 580 380 T 450 360 T 360 410 T 260 380 T 200 320 T 160 220 T 200 140 Z"
-                    fill="none"
-                    stroke="rgba(255, 255, 255, 0.15)"
-                    strokeWidth="3"
-                    className="drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]"
-                  />
-                  <path
-                    d="M 240 100 Q 300 70 380 90 T 500 130 T 600 180 T 650 280 T 580 380 T 450 360 T 360 410 T 260 380 T 200 320 T 160 220 T 200 140 Z"
-                    fill="rgba(15, 23, 42, 0.45)"
-                    className="backdrop-blur-sm"
+                  {/* Detailed map image */}
+                  <image
+                    href="/zambia-map-detailed.png"
+                    x="0"
+                    y="0"
+                    width="800"
+                    height="500"
+                    preserveAspectRatio="xMidYMid contain"
+                    opacity="0.3" /* Lower opacity for the dark ecosystem hub so glowing dots pop */
                   />
 
                   {/* Operational Nodes */}
                   {[
-                    { id: "operations", cx: 280, cy: 140, label: "Operations" },
+                    { id: "operations", cx: 440, cy: 240, label: "Operations" },
                     { id: "infrastructure", cx: 380, cy: 180, label: "Infrastructure" },
                     { id: "logistics", cx: 460, cy: 200, label: "Logistics" },
                     { id: "support", cx: 520, cy: 310, label: "Support" },
@@ -405,20 +333,23 @@ export function BlankSection(): JSX.Element {
                         className="cursor-pointer"
                       >
                         {/* Glow halo */}
+                        {/* Glow halo / Pulsing ring */}
                         <circle
                           cx={node.cx}
                           cy={node.cy}
-                          r={isNodeActive ? 22 : 12}
-                          fill={isNodeActive ? "rgba(244, 63, 94, 0.25)" : "rgba(255, 255, 255, 0.05)"}
-                          className="transition-all duration-500 ease-out"
+                          r={isNodeActive ? 20 : 12}
+                          fill={isNodeActive ? "transparent" : "rgba(255, 255, 255, 0.05)"}
+                          stroke={isNodeActive ? "#E11D48" : "none"}
+                          strokeWidth={isNodeActive ? 6 : 0}
+                          className={`transition-all duration-500 ease-out ${isNodeActive ? "animate-pulse" : ""}`}
                         />
                         <circle
                           cx={node.cx}
                           cy={node.cy}
-                          r={isNodeActive ? 12 : 6}
-                          fill={isNodeActive ? "#f43f5e" : "rgba(255,255,255,0.3)"}
-                          stroke="#ffffff"
-                          strokeWidth={isNodeActive ? 2 : 1}
+                          r={isNodeActive ? 8 : 6}
+                          fill={isNodeActive ? "#E11D48" : "rgba(255,255,255,0.3)"}
+                          stroke={isNodeActive ? "none" : "#ffffff"}
+                          strokeWidth={isNodeActive ? 0 : 1}
                           className="transition-all duration-500 ease-out"
                         />
                         {/* Label */}
@@ -440,7 +371,7 @@ export function BlankSection(): JSX.Element {
                 </svg>
 
                 {/* Floating active info card in the map */}
-                <div className="absolute bottom-6 left-6 right-6 lg:right-auto lg:w-80 p-5 rounded-2xl bg-slate-950/90 border border-white/10 shadow-2xl backdrop-blur-md select-none text-left">
+                <div className="absolute bottom-4 left-4 right-4 lg:bottom-6 lg:left-6 lg:right-auto lg:w-80 p-4 lg:p-5 rounded-2xl bg-slate-950/90 border border-white/10 shadow-2xl backdrop-blur-md select-none text-left">
                   <h4 className="text-sm font-bold text-white mb-1 uppercase tracking-wider flex items-center gap-2">
                     <Compass size={14} className="text-rose-500" />
                     {categories.find(c => c.id === activeCategory)?.title}
@@ -488,11 +419,11 @@ export function BlankSection(): JSX.Element {
         </div>
 
         {/* ══════════════════════════════════════════════════════════════════
-            SCROLL HINT — fades as user begins scrolling
+            SCROLL HINT — fades as user begins scrolling (Desktop Only)
         ══════════════════════════════════════════════════════════════════ */}
         <div
           ref={hintRef}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none"
+          className="hidden lg:flex absolute bottom-8 left-1/2 -translate-x-1/2 flex-col items-center gap-2 pointer-events-none"
           style={{ zIndex: 60 }}
         >
           <span className="text-[10px] font-bold tracking-[0.45em] text-neutral-400 uppercase">
