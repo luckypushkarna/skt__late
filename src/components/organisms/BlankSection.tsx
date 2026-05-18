@@ -51,55 +51,56 @@ export function BlankSection(): JSX.Element {
 
         // ── Full animation (no reduced-motion preference) ───────────────────
         mm.add("(prefers-reduced-motion: no-preference)", () => {
-          // ── ScrollTrigger 1: Entrance Fade-in and Slide-up ──
-          // Triggers as soon as the top of the section enters the bottom of the viewport
-          const entryTl = gsap.timeline({
-            scrollTrigger: {
-              trigger: containerRef.current,
-              start: "top bottom",
-              end: "top 15%",
-              scrub: 0.6,
-            },
-          });
-
-          entryTl.fromTo([contentRef.current, portalContainerRef.current],
-            { opacity: 0, y: 50 },
-            { opacity: 1, y: 0, ease: "power2.out" }
-          );
-
-          // ── ScrollTrigger 2: Pinned Expanding Circle and Content Reveal ──
-          // Pinned timeline starts exactly when the section hits top top
-          const mainTl = gsap.timeline({
+          /**
+           * Single scrubbed timeline.
+           * Total duration = 10 units → maps linearly to scroll 0% → 100%.
+           *
+           * Time → Scroll mapping:
+           *   0  → 0%
+           *   1  → 10%
+           *   3  → 30%
+           *   6  → 60%
+           *   10 → 100%
+           */
+          const tl = gsap.timeline({
             scrollTrigger: {
               trigger: containerRef.current,
               start: "top top",
               end: "bottom bottom",
-              scrub: 0.6,
+              scrub: 0.6,   // snappy scrub
             },
-            defaults: { ease: "none" },
+            defaults: { ease: "none" }, // linear by default; eases specified per tween
           });
 
-          // ── 0 → 1.5 : Scroll hint fades out ──
-          mainTl.to(hintRef.current,
-            { opacity: 0, duration: 0.6 },
+          // ── 0 → 0.8  : Section slides up and fades in (does not fade out)
+          tl.fromTo([contentRef.current, portalContainerRef.current],
+            { opacity: 0, y: 40 },
+            { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" },
             0,
           );
 
           // ── 0.8 → 2  : Core dot & glow disappear ─────────────────────────
-          mainTl.to([coreRef.current, glowRef.current],
+          tl.to([coreRef.current, glowRef.current],
             { opacity: 0, scale: 0, duration: 0.6, ease: "power3.in" },
             0.4,
           );
 
+          // ── 0 → 1.5  : Scroll hint fades ─────────────────────────────────
+          tl.to(hintRef.current,
+            { opacity: 0, duration: 0.6 },
+            0,
+          );
+
           // ── 1.5 → 10 : Circle expands (scale 0.05 → 15) ────────────────────
-          mainTl.fromTo(circleRef.current,
+          // Base size is 400px, so 0.05 = 20px initial, 15 = 6000px final (razor-sharp edge)
+          tl.fromTo(circleRef.current,
             { scale: 0.05, opacity: 1 },
             { scale: 15, duration: 5, ease: "power3.out" },
             0.8,
           );
 
           // ── 1.5 → 4.5 : COLOR: deep red → light purple ───────────────────
-          mainTl.to(circleRef.current,
+          tl.to(circleRef.current,
             {
               backgroundColor: "#A78BFA",
               duration: 1.8,
@@ -108,7 +109,7 @@ export function BlankSection(): JSX.Element {
           );
 
           // ── 4.5 → 10  : COLOR: light purple → deep dark blue ─────────────
-          mainTl.to(circleRef.current,
+          tl.to(circleRef.current,
             {
               backgroundColor: "#0B0F19",
               duration: 3,
@@ -117,16 +118,13 @@ export function BlankSection(): JSX.Element {
           );
 
           // ── 7 → 10   : Reveal content rises in (down to up) ──────────────
-          mainTl.fromTo(revealRef.current,
+          tl.fromTo(revealRef.current,
             { opacity: 0, y: 40 },
             { opacity: 1, y: 0, duration: 1.5, ease: "power3.out" },
             4.2,
           );
 
-          return () => {
-            entryTl.scrollTrigger?.kill();
-            mainTl.scrollTrigger?.kill();
-          };
+          return () => tl.scrollTrigger?.kill();
         });
 
         // ── Reduced motion: show static content, skip animation ─────────────
@@ -147,7 +145,7 @@ export function BlankSection(): JSX.Element {
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
     /**
-     * 250vh tall container — the extra height gives the scroll-linked
+     * 500vh tall container — the extra height gives the scroll-linked
      * animation plenty of room to play out at a relaxed, cinematic pace.
      */
     <div
@@ -165,7 +163,7 @@ export function BlankSection(): JSX.Element {
         ══════════════════════════════════════════════════════════════════ */}
         <div
           ref={contentRef}
-          className="absolute inset-0 flex items-start pt-24 lg:pt-32 opacity-0"
+          className="absolute inset-0 flex items-center opacity-0"
           style={{ zIndex: 10 }}
         >
           <div className="max-w-screen-xl mx-auto px-6 lg:px-12 w-full">
@@ -300,9 +298,9 @@ export function BlankSection(): JSX.Element {
                       key={cat.id}
                       onClick={() => setActiveCategory(cat.id)}
                       className={`relative flex items-center justify-between p-4 rounded-xl text-left transition-all duration-300 group ${
-                      isActive
-                        ? "bg-white/10 border-white/20 shadow-lg"
-                        : "bg-white/0 border-transparent hover:bg-white/5"
+                        isActive
+                          ? "bg-white/10 border-white/20 shadow-lg"
+                          : "bg-white/0 border-transparent hover:bg-white/5"
                       } border w-full`}
                     >
                       {/* Active vertical red bar indicator */}
@@ -498,6 +496,7 @@ export function BlankSection(): JSX.Element {
             style={{ background: "linear-gradient(to bottom, #a3a3a3, transparent)" }}
           />
         </div>
+
       </div>
     </div>
   );

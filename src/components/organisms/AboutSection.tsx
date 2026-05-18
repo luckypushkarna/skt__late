@@ -66,6 +66,9 @@ export function AboutSection(): JSX.Element {
   // Y: vehicle drives from top to bottom of the track
   const vehicleY = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
+  // Scale: subtle depth illusion — smaller at top, natural at bottom
+  const vehicleScale = useTransform(scrollYProgress, [0, 1], [0.85, 1]);
+
   // Opacity: fade IN at start of timeline, stay solid, fade OUT at end
   //   0.00 → 0   (invisible before timeline begins)
   //   0.06 → 1   (quick fade-in as first milestone appears)
@@ -81,7 +84,7 @@ export function AboutSection(): JSX.Element {
     <section
       ref={sectionRef}
       id="about"
-      className="relative pt-20 pb-0 bg-white overflow-hidden"
+      className="relative py-section bg-white overflow-hidden"
       aria-labelledby="about-heading"
     >
       <div className="max-w-screen-xl mx-auto px-6 lg:px-12">
@@ -139,6 +142,7 @@ export function AboutSection(): JSX.Element {
             style={{
               translateX: "-50%",
               top: vehicleY,
+              scale: vehicleScale,
               opacity: vehicleOpacity,
               marginTop: "-28px",
             }}
