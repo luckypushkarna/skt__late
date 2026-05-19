@@ -108,7 +108,7 @@ export function LifeAtSKT(): JSX.Element {
                     {story.title}
                   </h3>
                   <blockquote className="text-sm text-neutral-400 leading-relaxed italic mb-8 relative pl-4 border-l border-neutral-700">
-                    "{story.quote}"
+                    &ldquo;{story.quote}&rdquo;
                   </blockquote>
                 </div>
 

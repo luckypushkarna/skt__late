@@ -34,4 +34,5 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
     NEXT_PUBLIC_GA_ID: process.env.NEXT_PUBLIC_GA_ID,
   },
+  skipValidation: !!process.env.SKIP_ENV_VALIDATION,
 });

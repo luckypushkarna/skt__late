@@ -126,7 +126,6 @@ export async function POST(
     const { sendContactEmail } = await import("@/lib/email");
     await sendContactEmail(sanitizedData);
   } catch (error) {
-    console.error("[Contact API] Email send failed:", error);
     return buildErrorResponse(
       "Failed to send your message. Please try again later.",
       500
