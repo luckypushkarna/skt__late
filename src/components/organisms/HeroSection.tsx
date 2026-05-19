@@ -125,7 +125,7 @@ export function HeroSection(): JSX.Element {
           playsInline
           className="w-full h-full object-cover opacity-50 mix-blend-luminosity"
         >
-          <source src="/videos/hero-background.mp4" type="video/mp4" />
+          <source src="/videos/FF Hero Video 2.mp4" type="video/mp4" />
         </video>
         {/* Dynamic vignette */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_0%,_#050505_100%)] opacity-80" />
