@@ -15,6 +15,7 @@ interface HeroAnimationRefs {
   paragraphRef: React.RefObject<HTMLParagraphElement | null>;
   buttonsRef: React.RefObject<HTMLDivElement | null>;
   metricsRef: React.RefObject<HTMLDivElement | null>;
+  logosRef: React.RefObject<HTMLDivElement | null>;
 }
 
 export const useHeroAnimation = (refs: HeroAnimationRefs) => {
@@ -33,7 +34,8 @@ export const useHeroAnimation = (refs: HeroAnimationRefs) => {
         refs.ofMiningRef.current,
         refs.paragraphRef.current,
         refs.buttonsRef.current,
-        refs.metricsRef.current
+        refs.metricsRef.current,
+        refs.logosRef.current
       ], {
         opacity: 1,
         duration: ANIMATION_DURATIONS.fast,
@@ -70,6 +72,11 @@ export const useHeroAnimation = (refs: HeroAnimationRefs) => {
     gsap.set(refs.ofMiningLineRef.current, { scaleX: 0, transformOrigin: 'left center' });
     gsap.set(refs.ofMiningTextRef.current, { opacity: 0, x: -10 });
     gsap.set(refs.buttonsRef.current, { opacity: 0, y: 30 });
+    
+    // Logos initial state
+    if (refs.logosRef.current) {
+      gsap.set(refs.logosRef.current.children, { opacity: 0, y: 15 });
+    }
     
     // Setup metrics initial state
     const metricItems = refs.metricsRef.current?.children;
@@ -124,7 +131,18 @@ export const useHeroAnimation = (refs: HeroAnimationRefs) => {
       y: 0,
       duration: 1,
       ease: ANIMATION_EASINGS.premium,
-    }, "-=0.8")
+    }, "-=0.8");
+
+    // Logos stagger reveal
+    if (refs.logosRef.current) {
+      tl.to(refs.logosRef.current.children, {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: ANIMATION_EASINGS.premium,
+      }, "-=0.7");
+    }
 
     // Metrics stagger reveal
     if (metricItems) {

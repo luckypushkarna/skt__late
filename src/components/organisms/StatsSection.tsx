@@ -391,46 +391,7 @@ export function StatsSection(): JSX.Element {
           </div>
         </div>
 
-        {/* ══════════════════════════════════════════════════════════════════
-            BOTTOM QUOTE STRIP — Chairman's commitment statement
-        ══════════════════════════════════════════════════════════════════ */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-5%" }}
-          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-28 pt-12 border-t border-neutral-200"
-        >
-          <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-8 lg:gap-16 items-center">
-            {/* Chairman's premium executive portrait */}
-            <div className="flex-shrink-0 w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-72 lg:h-72 rounded-2xl overflow-hidden shadow-2xl bg-neutral-200 border border-neutral-300/40">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/unknown-leader.jpg"
-                alt="Unknown, Chairman"
-                className="w-full h-full object-cover"
-              />
-            </div>
 
-            {/* Quote text */}
-            <div className="space-y-6">
-              <p className="text-xl md:text-2xl lg:text-3xl font-black text-neutral-900 leading-[1.15] tracking-tight">
-                &ldquo;We do not simply extract minerals from the earth. We extract{" "}
-                <span className="quote-highlight text-neutral-300">
-                  the promise of a safer tomorrow from the dedication of our people.&rdquo;
-                </span>
-              </p>
-              <div>
-                <span className="text-sm font-bold text-neutral-900 block">
-                  Unknown
-                </span>
-                <span className="text-xs text-neutral-500 font-medium tracking-wide uppercase block mt-1">
-                  Chairman &amp; Managing Director, SKT Global
-                </span>
-              </div>
-            </div>
-          </div>
-        </motion.div>
       </div>
     </section>
   );

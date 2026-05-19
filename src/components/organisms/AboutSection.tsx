@@ -19,7 +19,7 @@ function MilestoneDot({ index }: { index: number }) {
   return (
     <div className="stone-marker-gsap w-12 h-12 flex items-center justify-center select-none" data-index={index}>
       <Image
-        src="/stone-marker-new.png"
+        src="/stone-marker-v2.png"
         alt="Stone Marker"
         width={44}
         height={44}
@@ -214,12 +214,6 @@ export function AboutSection(): JSX.Element {
         {/* Timeline */}
         <div ref={timelineRef} className="relative">
           {/* Sticky Counter Badge */}
-          <div className="sticky top-24 z-20 float-right mr-4 -mt-16 bg-neutral-900/90 border border-neutral-800 backdrop-blur-md px-4 py-2.5 rounded-xl hidden md:flex items-center gap-2.5 text-xs font-bold text-white shadow-xl">
-            <div className="w-5 h-5 flex items-center justify-center bg-neutral-800 rounded-lg">
-              <Image src="/stone-marker-new.png" alt="" width={14} height={14} />
-            </div>
-            <span>Stones Excavated: <span className="text-emerald-400 font-mono text-sm">{collectedCount}</span> / {MILESTONES.length}</span>
-          </div>
 
           {/* Vertical track — faint guide line */}
           <div className="absolute left-0 md:left-1/2 top-0 bottom-0 w-px bg-neutral-100 -translate-x-px md:-translate-x-1/2" />

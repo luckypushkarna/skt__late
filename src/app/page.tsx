@@ -5,11 +5,12 @@ import { AboutSection } from "@/components/organisms/AboutSection";
 import { BlankSection } from "@/components/organisms/BlankSection";
 import { ServicesSection } from "@/components/organisms/ServicesSection";
 import { StatsSection } from "@/components/organisms/StatsSection";
-import { StorySection } from "@/components/organisms/StorySection";
+
 import { TeamSection } from "@/components/organisms/TeamSection";
 import { ContactSection } from "@/components/organisms/ContactSection";
 import { MarqueeSection } from "@/components/organisms/MarqueeSection";
 import { generateMetadata } from "@/lib/seo";
+import { PartnersSection } from "@/components/organisms/PartnersSection";
 
 export const metadata = generateMetadata({
   description:
@@ -45,14 +46,16 @@ export default function HomePage(): JSX.Element {
         <StatsSection />
       </Suspense>
 
-      {/* Story / Pillars */}
-      <Suspense fallback={<SectionSkeleton />}>
-        <StorySection />
-      </Suspense>
+
 
       {/* Team */}
       <Suspense fallback={<SectionSkeleton />}>
         <TeamSection />
+      </Suspense>
+
+      {/* Partners */}
+      <Suspense fallback={<SectionSkeleton />}>
+        <PartnersSection />
       </Suspense>
 
       {/* Contact */}

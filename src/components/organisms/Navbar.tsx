@@ -101,14 +101,22 @@ export function Navbar(): JSX.Element {
               ))}
             </nav>
 
-            {/* Desktop CTA */}
-            <div className="hidden lg:flex items-center gap-4">
-              <Button 
-                variant={isScrolled ? "outline" : "secondary"} 
-                size="sm"
-              >
-                <Link href="/contact">Get In Touch</Link>
-              </Button>
+            {/* Desktop CTA replaced by TTIPL Logo */}
+            <div className="hidden lg:flex items-center gap-3">
+              <div className="flex flex-col">
+                <span className={cn(
+                  "text-xl font-black tracking-tight leading-none transition-colors duration-500",
+                  isScrolled ? "text-neutral-900" : "text-white"
+                )}>
+                  TTIPL
+                </span>
+                <span className={cn(
+                  "text-[9px] font-semibold tracking-[0.2em] uppercase leading-none transition-colors duration-500",
+                  isScrolled ? "text-neutral-500" : "text-white/60"
+                )}>
+                  TYRE TECHNOCRATS
+                </span>
+              </div>
             </div>
 
             {/* Mobile Menu Toggle */}

@@ -153,7 +153,7 @@ export function BlankSection(): JSX.Element {
                   <span className="text-neutral-300">Mining Ecosystem</span>
                 </h2>
                 <p className="text-neutral-500 max-w-lg text-base leading-relaxed">
-                  SKT Global’s operations in Zambia are built around underground mechanisation, operational infrastructure, workforce development, and long-term mining sustainability.
+                  SKT Global’s operations in Zambia are built around underground mechanisation, operational infrastructure, workforce development, and long-term mining sustainability. Continuous investment in underground equipment, operational systems, and workforce expansion is strengthening long-term mining continuity.
                 </p>
               </div>
 

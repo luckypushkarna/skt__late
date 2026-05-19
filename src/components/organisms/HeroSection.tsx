@@ -10,7 +10,7 @@ import { useHeroAnimation } from "@/hooks/useHeroAnimation";
 
 function MetricCounter({ value, label, delay = 0 }: { value: string; label: string; delay?: number }) {
   const [count, setCount] = useState(0);
-  
+
   const isStatic = value.includes("/");
   const hasPrefix = value.startsWith("US$");
   const prefix = hasPrefix ? "US$" : "";
@@ -67,7 +67,7 @@ function MetricCounter({ value, label, delay = 0 }: { value: string; label: stri
 
 export function HeroSection(): JSX.Element {
   const containerRef = useRef<HTMLElement>(null);
-  
+
   // Refs for GSAP
   const headline1Ref = useRef<HTMLHeadingElement>(null);
   const headline2Ref = useRef<HTMLHeadingElement>(null);
@@ -78,7 +78,8 @@ export function HeroSection(): JSX.Element {
   const paragraphRef = useRef<HTMLParagraphElement>(null);
   const buttonsRef = useRef<HTMLDivElement>(null);
   const metricsRef = useRef<HTMLDivElement>(null);
-  
+  const logosRef = useRef<HTMLDivElement>(null);
+
   const animationRefs = useMemo(() => ({
     headline1Ref,
     headline2Ref,
@@ -89,6 +90,7 @@ export function HeroSection(): JSX.Element {
     paragraphRef,
     buttonsRef,
     metricsRef,
+    logosRef,
   }), []);
 
   useHeroAnimation(animationRefs);
@@ -134,7 +136,7 @@ export function HeroSection(): JSX.Element {
       </motion.div>
 
       {/* Mouse reactive ambient glow */}
-      <div 
+      <div
         className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-300 opacity-30"
         style={{
           background: `radial-gradient(800px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(255,255,255,0.06), transparent 40%)`
@@ -164,7 +166,7 @@ export function HeroSection(): JSX.Element {
           className="mb-8 inline-block"
         >
           <Badge variant="outline" className="text-white/80 border-white/20 backdrop-blur-md px-4 py-1.5 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
-            STRATEGIC MINING OPERATIONS · ZAMBIA
+            MINING OPERATIONS · ZAMBIA
           </Badge>
         </motion.div>
 
@@ -172,7 +174,7 @@ export function HeroSection(): JSX.Element {
         <div className="flex flex-col mb-12">
           {/* Line 1 */}
           <div className="overflow-hidden pb-2 -mb-2">
-            <h1 
+            <h1
               ref={headline1Ref}
               className="text-display-lg font-black text-white leading-[0.9] tracking-tighter"
               style={{ clipPath: "polygon(0 0, 100% 0, 100% 120%, 0 120%)" }}
@@ -180,23 +182,38 @@ export function HeroSection(): JSX.Element {
               Engineering
             </h1>
           </div>
-          
+
           {/* Line 2 with micro-interaction text */}
           <div className="flex items-end gap-6 flex-wrap overflow-hidden pb-2 -mb-2 mt-1">
-            <h1 
+            <h1
               ref={headline2Ref}
               className="text-display-lg font-black text-white leading-[0.9] tracking-tighter"
               style={{ clipPath: "polygon(0 0, 100% 0, 100% 120%, 0 120%)" }}
             >
               The Future
             </h1>
-            
-            <div ref={ofMiningRef} className="hidden" />
+
+            <div
+              ref={ofMiningRef}
+              className="hidden md:flex items-center gap-4 mb-4 ml-2"
+            >
+              <div
+                ref={ofMiningLineRef}
+                className="w-16 h-[2px] bg-white/40 shadow-[0_0_8px_rgba(255,255,255,0.3)] origin-left"
+                style={{ transformOrigin: "0% 50%" }}
+              />
+              <span
+                ref={ofMiningTextRef}
+                className="text-xs font-bold tracking-[0.15em] text-white/60 uppercase"
+              >
+                of Mining
+              </span>
+            </div>
           </div>
-          
+
           {/* Line 3 */}
           <div className="overflow-hidden pb-2 -mb-2 mt-1">
-            <h1 
+            <h1
               ref={headline3Ref}
               className="text-display-lg font-black text-white/30 leading-[0.9] tracking-tighter mix-blend-plus-lighter"
               style={{ clipPath: "polygon(0 0, 100% 0, 100% 120%, 0 120%)" }}
@@ -208,45 +225,34 @@ export function HeroSection(): JSX.Element {
 
         {/* Description & CTAs */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-end mt-4">
-          <p 
-            ref={paragraphRef}
-            className="text-sm md:text-base text-white/70 leading-relaxed max-w-lg font-medium"
-            style={{ clipPath: "polygon(0 0, 100% 0, 100% 120%, 0 120%)" }}
-          >
-            Transforming underground mining through mechanisation, operational scale, and engineering precision across Zambia.
-          </p>
-
-          <div 
-            ref={buttonsRef}
-            className="flex flex-col sm:flex-row gap-5"
-          >
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button 
-                variant="secondary" 
-                size="lg" 
-                className="group relative overflow-hidden bg-white text-black hover:bg-neutral-200 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.15)]"
-              >
-                <Link href="/services" className="flex items-center gap-2 relative z-10">
-                  Explore Operations →
-                </Link>
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/5 to-transparent -translate-x-full group-hover:animate-shimmer" />
-              </Button>
-            </motion.div>
-            
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="group text-white border-white/20 hover:border-white/50 hover:bg-white/5 backdrop-blur-sm transition-all"
-              >
-                <Link href="/about">Discover SKT →</Link>
-              </Button>
-            </motion.div>
+          <div className="flex flex-col gap-6">
+            <p
+              ref={paragraphRef}
+              className="text-sm md:text-base text-white/70 leading-relaxed max-w-lg font-medium"
+              style={{ clipPath: "polygon(0 0, 100% 0, 100% 120%, 0 120%)" }}
+            >
+              Supporting large-scale underground mining operations at Mopani Copper Mines through mechanisation, infrastructure, workforce development, and operational excellence.
+            </p>
+            <div ref={logosRef} className="flex items-center gap-6 mt-2">
+              <img 
+                src="/mopani-logo.png" 
+                alt="Mopani Copper Mines Logo" 
+                className="h-10 w-auto object-contain brightness-0 invert opacity-60 hover:opacity-90 transition-opacity duration-300"
+              />
+              <div className="h-6 w-px bg-white/10" />
+              <img 
+                src="/irh-logo.png" 
+                alt="IRH Logo" 
+                className="h-10 w-auto object-contain brightness-0 invert opacity-60 hover:opacity-90 transition-opacity duration-300"
+              />
+            </div>
           </div>
+
+          <div ref={buttonsRef} className="hidden" />
         </div>
 
         {/* Bottom stats strip */}
-        <div 
+        <div
           ref={metricsRef}
           className="mt-24 pt-8 border-t border-white/10 grid grid-cols-2 md:grid-cols-4 gap-4"
         >
@@ -279,7 +285,7 @@ export function HeroSection(): JSX.Element {
           Scroll
         </span>
       </motion.div>
-      
+
       {/* Cinematic Top/Bottom Gradients for deep black fade */}
       <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-[#050505] to-transparent z-0 opacity-80" />
       <div className="absolute bottom-0 inset-x-0 h-48 bg-gradient-to-t from-[#050505] to-transparent z-0 opacity-90" />

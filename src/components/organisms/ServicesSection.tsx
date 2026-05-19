@@ -23,7 +23,7 @@ const CARDS = [
     icon: Package,
     title: "Strategic Warehousing",
     desc: "Centralised warehousing and inventory systems designed to maintain continuous operational readiness backed by a spare parts inventory valued at over US$3M.",
-    tags: ["US$3M+ Inventory", "Spare Parts", "Zero Downtime"],
+    tags: ["US$3M+ Inventory", "Spare Parts", "minimum downtime"],
     bgImage: "https://picsum.photos/seed/skt2/800/1200",
   },
   {
@@ -459,32 +459,7 @@ export function ServicesSection(): JSX.Element {
         </div>
       </div>
 
-      {/* ── Bottom CTA ── */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="max-w-screen-xl mx-auto px-6 lg:px-12 mt-20"
-      >
-        <div
-          className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 p-8 md:p-10 rounded-2xl border border-neutral-100 bg-neutral-50"
-        >
-          <div>
-            <h3 className="text-lg font-bold text-neutral-900 mb-1.5">Need a Custom Solution?</h3>
-            <p className="text-sm text-neutral-500 max-w-lg leading-relaxed">
-              Every mining project is unique. Our engineering team designs tailored solutions
-              that maximise efficiency while minimising environmental impact.
-            </p>
-          </div>
-          <Link
-            href="/contact"
-            className="flex-shrink-0 inline-flex items-center gap-2 text-sm font-bold text-white bg-neutral-900 rounded-full px-7 py-3.5 hover:bg-neutral-700 transition-colors duration-300"
-          >
-            Explore Operations →
-          </Link>
-        </div>
-      </motion.div>
+
     </section>
 
     {/* Operational Scale Section */}
