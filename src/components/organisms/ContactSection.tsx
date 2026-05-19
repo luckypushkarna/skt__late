@@ -119,6 +119,7 @@ export function ContactSection(): JSX.Element {
                         : undefined
                     }
                     className="block hover:opacity-80 transition-opacity duration-200"
+                    suppressHydrationWarning
                   >
                     {content}
                   </a>
