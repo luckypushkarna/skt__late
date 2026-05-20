@@ -163,7 +163,7 @@ function SliderCard({ card, verticalOffset = 0 }: { card: typeof CARDS[0]; verti
           {/* Full Dark Overlay Gradient */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
           {/* Frosted Glass Overlay for Text Area */}
-          <div className="absolute inset-x-0 bottom-0 h-[65%] bg-gradient-to-t from-neutral-950 via-neutral-950/85 to-transparent backdrop-blur-md transition-opacity duration-300" />
+          <div className="absolute inset-x-0 bottom-0 h-[65%] bg-gradient-to-t from-neutral-950 via-neutral-950/85 to-transparent backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]" />
         </>
       )}
 
@@ -198,40 +198,44 @@ function SliderCard({ card, verticalOffset = 0 }: { card: typeof CARDS[0]; verti
         >
           {card.title}
         </h3>
-        <p 
-          className={`text-xs leading-relaxed mb-4 max-w-[280px] transition-colors duration-300 ${
-            hasBg ? "text-neutral-300" : "text-neutral-500"
-          }`}
-        >
-          {card.desc}
-        </p>
 
-        {/* Tags */}
-        <div className="flex flex-wrap gap-1.5 mb-6">
-          {card.tags.map((tag) => (
-            <span
-              key={tag}
-              className={`text-[10px] font-semibold tracking-wider px-2.5 py-1 rounded-full uppercase transition-all duration-300 ${
-                hasBg
-                  ? "text-neutral-200 bg-white/10 border border-white/5 backdrop-blur-sm group-hover:bg-white/15"
-                  : "text-neutral-500 bg-neutral-50 border border-neutral-100"
-              }`}
-            >
-              {tag}
-            </span>
-          ))}
+        {/* Expandable details container on hover */}
+        <div className="max-h-0 opacity-0 overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:max-h-[300px] group-hover:opacity-100 mt-0 group-hover:mt-2">
+          <p 
+            className={`text-xs leading-relaxed mb-4 max-w-[280px] transition-colors duration-300 ${
+              hasBg ? "text-neutral-300" : "text-neutral-500"
+            }`}
+          >
+            {card.desc}
+          </p>
+
+          {/* Tags */}
+          <div className="flex flex-wrap gap-1.5 mb-6">
+            {card.tags.map((tag) => (
+              <span
+                key={tag}
+                className={`text-[10px] font-semibold tracking-wider px-2.5 py-1 rounded-full uppercase transition-all duration-300 ${
+                  hasBg
+                    ? "text-neutral-200 bg-white/10 border border-white/5 backdrop-blur-sm group-hover:bg-white/15"
+                    : "text-neutral-500 bg-neutral-50 border border-neutral-100"
+                }`}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          {/* Action Button matching Santorini/Swiss Chalet style */}
+          <button 
+            className={`w-full font-bold py-3 rounded-full transition-all duration-300 text-xs uppercase tracking-wider ${
+              hasBg 
+                ? "bg-white hover:bg-neutral-100 text-neutral-950 shadow-lg" 
+                : "border border-neutral-200 hover:bg-neutral-900 hover:text-white hover:border-neutral-900 text-neutral-900"
+            }`}
+          >
+            {hasBg ? "Explore Workshop" : "Learn More"}
+          </button>
         </div>
-
-        {/* Action Button matching Santorini/Swiss Chalet style */}
-        <button 
-          className={`w-full font-bold py-3 rounded-full transition-all duration-300 text-xs uppercase tracking-wider ${
-            hasBg 
-              ? "bg-white hover:bg-neutral-100 text-neutral-950 shadow-lg" 
-              : "border border-neutral-200 hover:bg-neutral-900 hover:text-white hover:border-neutral-900 text-neutral-900"
-          }`}
-        >
-          {hasBg ? "Explore Workshop" : "Learn More"}
-        </button>
       </div>
 
       {/* Bottom accent line — appears on hover for light cards */}
