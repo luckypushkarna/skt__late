@@ -6,23 +6,8 @@
 
 ---
 
-## 🚫 The Golden Rule: No Raw Quotes
 
-When modifying any text inside React components (`.tsx` files), **never** type raw quotation marks or apostrophes directly inside JSX markup.
-
-### ❌ WRONG (Will break Vercel immediately)
-```jsx
-<p>We don't just extract value, we build "excellence" here.</p>
-```
-
-### ✅ CORRECT (Production-safe entities)
-```jsx
-<p>We don&apos;t just extract value, we build &ldquo;excellence&rdquo; here.</p>
-```
-
----
-
-## ⚡ The 3-Step Safety Check (Run Before Pushing)
+## ⚡Step Safety Check (Run Before Pushing)
 
 If you *must* edit the code, you **must** run these commands in order and ensure they pass with **zero errors** before pushing to GitHub:
 
