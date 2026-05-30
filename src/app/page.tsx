@@ -7,6 +7,7 @@ import { ServicesSection } from "@/components/organisms/ServicesSection";
 import { StatsSection } from "@/components/organisms/StatsSection";
 
 import { TeamSection } from "@/components/organisms/TeamSection";
+import { GallerySection } from "@/components/organisms/GallerySection";
 import { ContactSection } from "@/components/organisms/ContactSection";
 import { MarqueeSection } from "@/components/organisms/MarqueeSection";
 import { generateMetadata } from "@/lib/seo";
@@ -46,7 +47,10 @@ export default function HomePage(): JSX.Element {
         <StatsSection />
       </Suspense>
 
-
+      {/* Gallery */}
+      <Suspense fallback={<SectionSkeleton />}>
+        <GallerySection />
+      </Suspense>
 
       {/* Team */}
       <Suspense fallback={<SectionSkeleton />}>

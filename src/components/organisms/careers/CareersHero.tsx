@@ -2,6 +2,7 @@
 
 import { JSX, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { Search, MapPin, Briefcase } from "lucide-react";
 
 const CATEGORIES = [
@@ -236,11 +237,13 @@ export function CareersHero(): JSX.Element {
               className="floating-card-1 absolute top-[10%] left-[5%] w-[45%] aspect-[4/5] rounded-2xl overflow-hidden bg-white border border-neutral-200 shadow-2xl z-20 group cursor-default"
             >
               <div className="relative w-full h-full">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={EMPLOYEE_CARDS[0].img}
                   alt={EMPLOYEE_CARDS[0].role}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  fill
+                  sizes="(max-width: 1024px) 50vw, 25vw"
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  priority
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/80 via-transparent to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4 text-white">
@@ -259,11 +262,12 @@ export function CareersHero(): JSX.Element {
               className="floating-card-2 absolute top-[20%] right-[5%] w-[42%] aspect-[4/5] rounded-2xl overflow-hidden bg-white border border-neutral-200 shadow-2xl z-10 group cursor-default"
             >
               <div className="relative w-full h-full">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={EMPLOYEE_CARDS[1].img}
                   alt={EMPLOYEE_CARDS[1].role}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  fill
+                  sizes="(max-width: 1024px) 50vw, 25vw"
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/80 via-transparent to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4 text-white">
@@ -282,11 +286,12 @@ export function CareersHero(): JSX.Element {
               className="floating-card-3 absolute bottom-[10%] left-[20%] w-[40%] aspect-[4/5] rounded-2xl overflow-hidden bg-white border border-neutral-200 shadow-2xl z-20 group cursor-default"
             >
               <div className="relative w-full h-full">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={EMPLOYEE_CARDS[2].img}
                   alt={EMPLOYEE_CARDS[2].role}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  fill
+                  sizes="(max-width: 1024px) 50vw, 25vw"
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/80 via-transparent to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4 text-white">

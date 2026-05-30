@@ -10,19 +10,19 @@ import { containerVariants, itemVariants } from "@/lib/animations";
 function TeamMemberCard({ member }: { member: typeof TEAM_MEMBERS[0] }) {
   // Mapping of exact filenames in public folder for premium deterministic resolution
   const images: Record<string, string> = {
-    "sahil-talreja": "/Sahil Talreja.jpg",
-    "anand-kolappa-pillai": "/Anand Kolappa Pillai.jpg",
-    "sanjay-kumar-sharma": "/Sanjay Kumar sharma.jpg",
-    "srinivasulu-jonnalagadda": "/Srinivasulu Jonnalagadda.jpg",
-    "kiran-kumar-reddy": "/Kiran Kumar Reddy.jpg",
-    "suresh-babu-deshamalla": "/Suresh Babu Deshamalla.jpg",
-    "kuldeep-kulshrestha": "/Kuldeep Kulshrestha.jpg",
-    "mulenga-mutati": "/Mulenga Mutati.jpg",
-    "safeli-maxim-chipulu": "/Safeli maxim chipulu.jpg",
-    "toms-joseph": "/Toms Joseph.jpg",
+    "sahil-talreja": "/Sahil Talreja.webp",
+    "anand-kolappa-pillai": "/Anand Kolappa Pillai.webp",
+    "sanjay-kumar-sharma": "/Sanjay Kumar sharma.webp",
+    "srinivasulu-jonnalagadda": "/Srinivasulu Jonnalagadda.webp",
+    "kiran-kumar-reddy": "/Kiran Kumar Reddy.webp",
+    "suresh-babu-deshamalla": "/Suresh Babu Deshamalla.webp",
+    "kuldeep-kulshrestha": "/Kuldeep Kulshrestha.webp",
+    "mulenga-mutati": "/Mulenga Mutati.webp",
+    "safeli-maxim-chipulu": "/Safeli maxim chipulu.webp",
+    "toms-joseph": "/Toms Joseph.webp",
   };
 
-  const imgSrc = images[member.id] || "/unknown-leader.jpg";
+  const imgSrc = images[member.id] || "/unknown-leader.webp";
 
   // Custom premium editorial overlay actions
   const overlayDetails: Record<string, { title: string; action: string }> = {

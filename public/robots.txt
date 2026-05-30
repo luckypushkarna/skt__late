@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sktglobalmining.vercel.app/sitemap.xml

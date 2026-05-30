@@ -2,6 +2,7 @@
 
 import { JSX, useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 // ─── Safety pillars — each maps to one image card ───────────────────────────
 const PILLARS = [
@@ -45,10 +46,10 @@ const PILLARS = [
 // ─── Stack layout offsets for inactive cards ─────────────────────────────────
 const STACK_OFFSETS = [
   { x: 0,   y: 0,    scale: 1,    z: 50, opacity: 1    }, // active (front)
-  { x: 12,  y: -12,  scale: 0.95, z: 40, opacity: 0.72 }, // 2nd
-  { x: 22,  y: -22,  scale: 0.90, z: 30, opacity: 0.50 }, // 3rd
-  { x: 30,  y: -30,  scale: 0.85, z: 20, opacity: 0.32 }, // 4th
-  { x: 37,  y: -37,  scale: 0.80, z: 10, opacity: 0.18 }, // 5th (back)
+  { x: 12,  y: -12,  scale: 1,    z: 40, opacity: 0.72 }, // 2nd
+  { x: 22,  y: -22,  scale: 1,    z: 30, opacity: 0.50 }, // 3rd
+  { x: 30,  y: -30,  scale: 1,    z: 20, opacity: 0.32 }, // 4th
+  { x: 37,  y: -37,  scale: 1,    z: 10, opacity: 0.18 }, // 5th (back)
 ];
 
 export function StatsSection(): JSX.Element {
@@ -322,7 +323,7 @@ export function StatsSection(): JSX.Element {
                   <div
                     key={p.num}
                     onClick={() => handlePillarClick(i)}
-                    className="absolute inset-0 rounded-[28px] overflow-hidden cursor-pointer"
+                    className="absolute inset-0 rounded-2xl overflow-hidden cursor-pointer"
                     style={{
                       ...stackStyle,
                       transition: "transform 0.65s cubic-bezier(0.16,1,0.3,1), opacity 0.55s ease, box-shadow 0.45s ease",
@@ -332,17 +333,18 @@ export function StatsSection(): JSX.Element {
                     }}
                   >
                     {/* Photo */}
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <Image
                       src={p.img}
                       alt={p.tag}
-                      loading="lazy"
-                      className="w-full h-full object-cover"
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 30vw"
+                      className="object-cover"
                       style={{
                         transition: "transform 0.9s cubic-bezier(0.16,1,0.3,1)",
-                        transform: isActive ? "scale(1.03)" : "scale(1)",
+                        transform: "scale(1)",
                         filter: isActive ? "brightness(1)" : "brightness(0.85)",
                       }}
+                      priority={i === 0}
                     />
 
                     {/* Bottom gradient overlay */}

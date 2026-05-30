@@ -2,6 +2,7 @@
 
 import { JSX } from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { Badge } from "@/components/atoms/Badge";
 import { FileUp, ArrowRight } from "lucide-react";
 
@@ -10,11 +11,12 @@ export function CareersCTA(): JSX.Element {
     <section className="relative py-28 bg-neutral-950 text-white overflow-hidden flex flex-col justify-center min-h-[75vh]">
       {/* Immersive industrial mining overlay background */}
       <div className="absolute inset-0 bg-neutral-900 pointer-events-none">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src="https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=1600&auto=format&fit=crop&q=80"
           alt="Underground Industrial Operations"
-          className="w-full h-full object-cover opacity-15 grayscale contrast-125"
+          fill
+          sizes="100vw"
+          className="object-cover opacity-15 grayscale contrast-125"
         />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0)_20%,rgba(10,10,10,0.95)_90%)]" />
         <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/70 to-neutral-950/20" />

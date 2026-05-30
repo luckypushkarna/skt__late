@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/atoms/Badge";
+import Image from "next/image";
 import { JSX } from "react";
 
 // ─── Safety Pillars Data ──────────────────────────────────────────────────────
@@ -307,12 +308,13 @@ export function StorySection(): JSX.Element {
                       transition: "opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 1.4s cubic-bezier(0.16,1,0.3,1)",
                     }}
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <Image
                       src={pillar.image}
                       alt={pillar.imageAlt}
-                      className="w-full h-full object-cover"
-                      loading={i === 0 ? "eager" : "lazy"}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 38vw"
+                      className="object-cover"
+                      priority={i === 0}
                     />
                     {/* Cinematic gradient overlay */}
                     <div
@@ -439,12 +441,13 @@ const SafetyCard = forwardRef<HTMLDivElement, SafetyCardProps>(
           className="lg:hidden relative w-full mb-8 rounded-xl overflow-hidden"
           style={{ aspectRatio: "16/9" }}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src={pillar.image}
             alt={pillar.imageAlt}
-            className="w-full h-full object-cover"
-            loading={index === 0 ? "eager" : "lazy"}
+            fill
+            sizes="(max-width: 1024px) 100vw, 10vw"
+            className="object-cover"
+            priority={index === 0}
           />
           <div
             className="absolute inset-0"

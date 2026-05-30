@@ -46,6 +46,10 @@ export function StatCard({ stat, index, className }: StatCardProps): JSX.Element
     hasAnimated.current = true;
 
     const el = valueRef.current;
+    let timer1: NodeJS.Timeout | null = null;
+    let timer2: NodeJS.Timeout | null = null;
+    let interval: NodeJS.Timeout | null = null;
+    let gsapTween: any = null;
 
     // ── Typewriter for text values (e.g. "Zero") ──────────────────────────
     if (isText) {
@@ -57,23 +61,28 @@ export function StatCard({ stat, index, className }: StatCardProps): JSX.Element
       // Initial delay matches the card's stagger so it fires after the fade-up
       const startDelay = index * 120 + 300; // ms
 
-      setTimeout(() => {
-        const interval = setInterval(() => {
-          el.textContent += chars[i];
+      timer1 = setTimeout(() => {
+        interval = setInterval(() => {
+          if (!el) return;
+          el.textContent += chars[i] || "";
           i++;
           if (i >= chars.length) {
-            clearInterval(interval);
+            if (interval) clearInterval(interval);
             // Blink cursor briefly then hide it
             if (cursor) {
-              setTimeout(() => {
-                cursor.style.opacity = "0";
+              timer2 = setTimeout(() => {
+                if (cursor) cursor.style.opacity = "0";
               }, 800);
             }
           }
         }, 90); // ~90ms per character — crisp, premium pacing
       }, startDelay);
 
-      return;
+      return () => {
+        if (timer1) clearTimeout(timer1);
+        if (timer2) clearTimeout(timer2);
+        if (interval) clearInterval(interval);
+      };
     }
 
     // ── Count-up for numeric values ───────────────────────────────────────
@@ -83,19 +92,23 @@ export function StatCard({ stat, index, className }: StatCardProps): JSX.Element
     (async () => {
       const { default: gsap } = await import("gsap");
 
-      gsap.to(counter, {
+      gsapTween = gsap.to(counter, {
         val: target,
         duration: 1.8,
         delay: index * 0.12,
         ease: "power4.out",
         onUpdate() {
-          el.textContent = fmt(counter.val, dp);
+          if (el) el.textContent = fmt(counter.val, dp);
         },
         onComplete() {
-          el.textContent = fmt(target, dp);
+          if (el) el.textContent = fmt(target, dp);
         },
       });
     })();
+
+    return () => {
+      if (gsapTween) gsapTween.kill();
+    };
   }, [isInView, isText, stat.value, rawNumeric, dp, index]);
 
   return (

@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState, useMemo, JSX } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowDown } from "lucide-react";
+import Image from "next/image";
 import { Badge } from "@/components/atoms/Badge";
 import { useHeroAnimation } from "@/hooks/useHeroAnimation";
 
@@ -100,13 +101,18 @@ export function HeroSection(): JSX.Element {
 
   const y = useTransform(scrollYProgress, [0, 1], [0, 250]); // slightly slower than background
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const videoScale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
+  const videoY = useTransform(scrollYProgress, [0, 1], [0, 120]);
 
   // Ambient mouse light effect
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const glowRef = useRef<HTMLDivElement>(null);
   const handleMouseMove = (e: React.MouseEvent) => {
-    const { clientX, clientY } = e;
-    setMousePosition({ x: clientX, y: clientY });
+    const glow = glowRef.current;
+    if (!glow) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    glow.style.setProperty("--mouse-x", `${x}px`);
+    glow.style.setProperty("--mouse-y", `${y}px`);
   };
 
   return (
@@ -117,27 +123,26 @@ export function HeroSection(): JSX.Element {
       aria-label="Hero section"
     >
       {/* Background Video with Parallax & Interaction Overlays */}
-      <motion.div style={{ scale: videoScale }} className="absolute inset-0 z-0 origin-top">
+      <motion.div style={{ y: videoY }} className="absolute inset-0 z-0 origin-top will-change-transform">
         <video
           autoPlay
           muted
           loop
           playsInline
-          className="w-full h-full object-cover opacity-50 mix-blend-luminosity"
+          className="w-full h-full object-cover opacity-60"
         >
-          <source src="/videos/FF Hero Video.mp4" type="video/mp4" />
+          <source src="/videos/hero-background-optimized.mp4" type="video/mp4" />
         </video>
         {/* Dynamic vignette */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_0%,_#050505_100%)] opacity-80" />
-        {/* Film grain overlay */}
-        <div className="absolute inset-0 opacity-[0.03] bg-[url('https://upload.wikimedia.org/wikipedia/commons/7/76/1k_Dissolve_Noise_Texture.png')] pointer-events-none mix-blend-overlay" />
       </motion.div>
 
       {/* Mouse reactive ambient glow */}
       <div
+        ref={glowRef}
         className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-300 opacity-30"
         style={{
-          background: `radial-gradient(800px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(255,255,255,0.06), transparent 40%)`
+          background: `radial-gradient(800px circle at var(--mouse-x, -1000px) var(--mouse-y, -1000px), rgba(255,255,255,0.06), transparent 40%)`
         }}
       />
 
@@ -232,17 +237,37 @@ export function HeroSection(): JSX.Element {
               Supporting large-scale underground mining operations at Mopani Copper Mines through mechanisation, infrastructure, workforce development, and operational excellence.
             </p>
             <div ref={logosRef} className="flex items-center gap-5 mt-2">
-              <img 
-                src="/mopani-logo.png" 
-                alt="Mopani Copper Mines Logo" 
-                className="h-8 w-auto object-contain brightness-0 invert opacity-60 hover:opacity-90 transition-opacity duration-300"
-              />
+              <a
+                href="https://mopani.com.zm/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="cursor-pointer inline-block relative h-8 w-32"
+              >
+                <Image 
+                  src="/mopani-logo.webp" 
+                  alt="Mopani Copper Mines Logo" 
+                  fill
+                  sizes="(max-width: 768px) 128px, 128px"
+                  className="object-contain brightness-0 invert opacity-60 hover:opacity-90 transition-opacity duration-300"
+                  priority
+                />
+              </a>
               <div className="h-5 w-px bg-white/10" />
-              <img 
-                src="/irh-logo.png" 
-                alt="IRH Logo" 
-                className="h-8 w-auto object-contain brightness-0 invert opacity-60 hover:opacity-90 transition-opacity duration-300"
-              />
+              <a
+                href="https://www.irh.ae/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="cursor-pointer inline-block relative h-8 w-20"
+              >
+                <Image 
+                  src="/irh-logo.webp" 
+                  alt="IRH Logo" 
+                  fill
+                  sizes="(max-width: 768px) 80px, 80px"
+                  className="object-contain brightness-0 invert opacity-60 hover:opacity-90 transition-opacity duration-300"
+                  priority
+                />
+              </a>
             </div>
           </div>
 

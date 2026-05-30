@@ -187,7 +187,7 @@ export function BlankSection(): JSX.Element {
                   <g ref={mapPathRef}>
                     {/* Detailed map image */}
                     <image
-                      href="/zambia-map-detailed.png"
+                      href="/zambia-map-detailed.webp"
                       x="0"
                       y="0"
                       width="800"
@@ -328,7 +328,7 @@ export function BlankSection(): JSX.Element {
 
                   {/* Detailed map image */}
                   <image
-                    href="/zambia-map-detailed.png"
+                    href="/zambia-map-detailed.webp"
                     x="0"
                     y="0"
                     width="800"

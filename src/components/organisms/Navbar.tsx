@@ -61,7 +61,7 @@ export function Navbar(): JSX.Element {
               aria-label={`${SITE_CONFIG.name} - Home`}
             >
               <Image
-                src="/SKT Full logo (White).png"
+                src="/SKT Full logo (White).webp"
                 alt={`${SITE_CONFIG.name} Logo`}
                 width={200}
                 height={50}

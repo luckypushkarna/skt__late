@@ -18,7 +18,7 @@ function MilestoneDot({ index }: { index: number }) {
   return (
     <div className="stone-marker-gsap w-12 h-12 flex items-center justify-center select-none" data-index={index}>
       <Image
-        src="/stone-marker-v2.png"
+        src="/stone-marker-v2.webp"
         alt="Stone Marker"
         width={44}
         height={44}
@@ -69,9 +69,8 @@ export function AboutSection(): JSX.Element {
         // 2. Animate the vehicle! (This guarantees stones and vehicle use identical timelines)
         tl.to({}, { duration: 1 }); // Force duration to exactly 1.0
         tl.fromTo(excavator, { top: "0%" }, { top: "100%", ease: "none", duration: 1 }, 0);
-        tl.fromTo(excavator, { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 0.86, duration: 0.06, ease: "none" }, 0);
-        tl.to(excavator, { scale: 0.98, ease: "none", duration: 0.84 }, 0.06);
-        tl.to(excavator, { opacity: 0, scale: 1, ease: "none", duration: 0.1 }, 0.90);
+        tl.fromTo(excavator, { opacity: 0 }, { opacity: 1, duration: 0.06, ease: "none" }, 0);
+        tl.to(excavator, { opacity: 0, ease: "none", duration: 0.1 }, 0.90);
 
         const cRect = container.getBoundingClientRect();
         const containerHeight = cRect.height;
@@ -218,7 +217,7 @@ export function AboutSection(): JSX.Element {
               }}
             />
             <Image
-              src="/gaadi-jcb.png"
+              src="/gaadi-jcb.webp"
               alt=""
               aria-hidden="true"
               width={52}

@@ -1,58 +1,225 @@
 "use client";
 
-import { JSX, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { JSX, useEffect, useRef, useState } from "react";
+import { motion, useInView, animate, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import { STATS } from "@/lib/constants";
 
+// ─── Animated Number Counter ─────────────────────────────────────────────────
+
+function CountUp({
+  target,
+  duration = 1.8,
+  started,
+}: {
+  target: number;
+  duration?: number;
+  started: boolean;
+}) {
+  const [display, setDisplay] = useState(0);
+  const rafRef = useRef<ReturnType<typeof animate> | null>(null);
+
+  useEffect(() => {
+    if (!started) return;
+    rafRef.current = animate(0, target, {
+      duration,
+      ease: [0.16, 1, 0.3, 1],
+      onUpdate: (v) => setDisplay(Math.round(v)),
+    });
+    return () => rafRef.current?.stop();
+  }, [started, target, duration]);
+
+  return <>{display.toLocaleString()}</>;
+}
+
+// ─── Typewriter for text values (e.g. 24/7) ──────────────────────────────────
+
+function Typewriter({ text, started }: { text: string; started: boolean }) {
+  const [display, setDisplay] = useState("");
+
+  useEffect(() => {
+    if (!started) return;
+    setDisplay("");
+    let i = 0;
+    const chars = text.split("");
+    const interval = setInterval(() => {
+      setDisplay(chars.slice(0, i + 1).join(""));
+      i++;
+      if (i >= chars.length) clearInterval(interval);
+    }, 90);
+    return () => clearInterval(interval);
+  }, [started, text]);
+
+  return (
+    <>
+      {display}
+      {display.length < text.length && (
+        <span className="animate-pulse opacity-50">|</span>
+      )}
+    </>
+  );
+}
+
+// ─── Single stat card ─────────────────────────────────────────────────────────
+
+function StatCard({
+  stat,
+  index,
+  sectionStarted,
+}: {
+  stat: (typeof STATS)[number];
+  index: number;
+  sectionStarted: boolean;
+}) {
+  const isNumeric = /^\d+$/.test(stat.value);
+  const numericValue = isNumeric ? parseInt(stat.value, 10) : 0;
+
+  const [started, setStarted] = useState(false);
+  useEffect(() => {
+    if (!sectionStarted) return;
+    const t = setTimeout(() => setStarted(true), index * 120);
+    return () => clearTimeout(t);
+  }, [sectionStarted, index]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.55, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
+      className="group p-8 border-t border-neutral-200 hover:border-neutral-900 transition-colors duration-300"
+    >
+      <div className="flex items-baseline gap-1 mb-2">
+        {stat.prefix && (
+          <motion.span
+            initial={{ opacity: 0, y: 8 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: index * 0.06 + 0.15 }}
+            className="text-2xl font-medium text-neutral-400"
+          >
+            {stat.prefix}
+          </motion.span>
+        )}
+        <span className="text-5xl md:text-6xl font-black text-neutral-900 tracking-tight leading-none tabular-nums">
+          {isNumeric ? (
+            <CountUp target={numericValue} started={started} />
+          ) : (
+            <Typewriter text={stat.value} started={started} />
+          )}
+        </span>
+        {stat.suffix && (
+          <motion.span
+            initial={{ opacity: 0, x: -6 }}
+            animate={started ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.35, delay: 0.6 }}
+            className="text-2xl font-bold text-neutral-400"
+          >
+            {stat.suffix}
+          </motion.span>
+        )}
+      </div>
+
+      <motion.h3
+        initial={{ opacity: 0, y: 6 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.4, delay: index * 0.06 + 0.2 }}
+        className="text-sm font-semibold text-neutral-900 tracking-widest uppercase mb-1"
+      >
+        {stat.label}
+      </motion.h3>
+
+      <motion.p
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.4, delay: index * 0.06 + 0.3 }}
+        className="text-xs text-neutral-400 leading-relaxed"
+      >
+        {stat.description}
+      </motion.p>
+    </motion.div>
+  );
+}
+
+// ─── Scroll-based text animation ─────────────────────────────────────────────
+
+interface ScrollAnimatedWordProps {
+  readonly word: { text: string; suffix: string };
+  readonly index: number;
+  readonly total: number;
+  readonly scrollYProgress: any;
+}
+
+function ScrollAnimatedWord({
+  word,
+  index,
+  total,
+  scrollYProgress,
+}: ScrollAnimatedWordProps) {
+  const start = index / total;
+  const end = (index + 1.2) / total;
+  const color = useTransform(
+    scrollYProgress,
+    [start, Math.min(end, 1)],
+    ["#a3a3a3", "#1a1a1a"]
+  );
+
+  return (
+    <span className="inline">
+      <motion.span
+        style={{ color }}
+        className="inline"
+      >
+        {word.text}
+      </motion.span>
+      {word.suffix}
+    </span>
+  );
+}
+
+function ScrollAnimatedQuote() {
+  const containerRef = useRef<HTMLSpanElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start 85%", "end 55%"],
+  });
+
+  const animWords = [
+    { text: "We", suffix: " " },
+    { text: "extract", suffix: " " },
+    { text: "potential", suffix: " " },
+    { text: "from", suffix: " " },
+    { text: "the", suffix: " " },
+    { text: "earth,", suffix: " " },
+    { text: "and", suffix: " " },
+    { text: "from", suffix: " " },
+    { text: "our", suffix: " " },
+    { text: "people.", suffix: "" },
+  ];
+
+  return (
+    <span ref={containerRef} className="inline">
+      {animWords.map((word, i) => (
+        <ScrollAnimatedWord
+          key={i}
+          word={word}
+          index={i}
+          total={animWords.length}
+          scrollYProgress={scrollYProgress}
+        />
+      ))}
+    </span>
+  );
+}
+
+// ─── Section ─────────────────────────────────────────────────────────────────
+
 export function OperationalScaleSection(): JSX.Element {
   const sectionRef = useRef<HTMLElement>(null);
-  const quoteHighlightRef = useRef<HTMLSpanElement>(null);
-
-  // Premium GSAP scroll-synchronized word-reveal animation
-  useEffect(() => {
-    let ctx: { revert: () => void } | null = null;
-
-    const init = async () => {
-      const gsap = (await import("gsap")).default;
-      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
-      gsap.registerPlugin(ScrollTrigger);
-
-      ctx = gsap.context(() => {
-        const highlightEl = quoteHighlightRef.current;
-        if (highlightEl) {
-          const text = highlightEl.innerText;
-          const words = text.split(/\s+/);
-
-          // Split the text into separate span words for animation
-          highlightEl.innerHTML = words
-            .map(
-              (w) =>
-                `<span class="quote-reveal-word text-neutral-200 inline-block mr-1.5 transition-colors duration-200">${w}</span>`
-            )
-            .join("");
-
-          const wordEls = highlightEl.querySelectorAll(".quote-reveal-word");
-
-          // Sync word color fade with scrollbar progression
-          gsap.to(wordEls, {
-            scrollTrigger: {
-              trigger: highlightEl,
-              start: "top 95%", // starts as it enters viewport
-              end: "bottom 70%", // ends near middle of viewport
-              scrub: 0.5,
-            },
-            color: "#171717", // premium charcoal black
-            stagger: 0.08,
-            ease: "none",
-          });
-        }
-      }, sectionRef);
-    };
-
-    init();
-    return () => ctx?.revert();
-  }, []);
+  const statsRef = useRef<HTMLDivElement>(null);
+  const statsInView = useInView(statsRef, { once: true, margin: "-80px" });
 
   return (
     <section
@@ -63,7 +230,7 @@ export function OperationalScaleSection(): JSX.Element {
     >
       <div className="max-w-screen-xl mx-auto px-6 lg:px-12">
 
-        {/* ── Header block ── */}
+        {/* ── Header ── */}
         <div className="mb-16">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -71,7 +238,7 @@ export function OperationalScaleSection(): JSX.Element {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold tracking-widest uppercase bg-transparent text-neutral-600 pl-0 mb-6">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest uppercase text-neutral-600 mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-neutral-400 inline-block" />
               OPERATIONAL SCALE
             </span>
@@ -98,96 +265,163 @@ export function OperationalScaleSection(): JSX.Element {
               transition={{ duration: 0.8, delay: 0.1 }}
               className="text-base text-neutral-500 leading-relaxed self-end max-w-lg"
             >
-              Behind every metric is our dedicated team of professionals, an unwavering commitment to safe operations, and strategic alignment with IRH to accelerate development and increase production at Mopani Copper Mines.
+              Behind every metric is our dedicated team of professionals, an
+              unwavering commitment to safe operations, and strategic alignment
+              with IRH to accelerate development and increase production at
+              Mopani Copper Mines.
             </motion.p>
           </div>
         </div>
 
-        {/* ── 6 Stats Grid with Symmetrical Border Dividers ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0">
-          {STATS.map((stat, index) => {
-            const hasPrefix = !!stat.prefix;
-            const hasSuffix = !!stat.suffix;
-
-            return (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.05 }}
-                className="group p-8 border-t border-neutral-200 hover:border-neutral-900 transition-colors duration-300"
-              >
-                <div className="flex items-baseline gap-1 mb-2">
-                  {hasPrefix && (
-                    <span className="text-2xl font-medium text-neutral-400">
-                      {stat.prefix}
-                    </span>
-                  )}
-                  <span className="text-5xl md:text-6xl font-black text-neutral-900 tracking-tight leading-none">
-                    <span>{stat.value}</span>
-                  </span>
-                  {hasSuffix && (
-                    <span className="text-2xl font-bold text-neutral-400">
-                      {stat.suffix}
-                    </span>
-                  )}
-                </div>
-                <h3 className="text-sm font-semibold text-neutral-900 tracking-widest uppercase mb-1">
-                  {stat.label}
-                </h3>
-                <p className="text-xs text-neutral-400 leading-relaxed">
-                  {stat.description}
-                </p>
-              </motion.div>
-            );
-          })}
+        {/* ── Stats Grid ── */}
+        <div
+          ref={statsRef}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0"
+        >
+          {STATS.map((stat, index) => (
+            <StatCard
+              key={stat.label}
+              stat={stat}
+              index={index}
+              sectionStarted={statsInView}
+            />
+          ))}
         </div>
 
-        {/* ── Bottom Quote Strip (Chairman Portrait & Scroll Reveal Quote) ── */}
+        {/* ── Chairman Editorial Quote ── */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-24 pt-20 border-t border-neutral-100 grid grid-cols-1 lg:grid-cols-[1.1fr_1.9fr] gap-12 lg:gap-24 items-center"
+          className="mt-28 pt-20 border-t border-neutral-100"
         >
-          {/* Executive portrait of S.K. Thakur */}
-          <div className="relative aspect-[4/5] lg:aspect-[0.85/1] overflow-hidden rounded-2xl bg-neutral-50 shadow-2xl">
-            <Image
-              alt="Raj Talreja - Chairman & Managing Director"
-              src="/Raj Sir Photo.png"
-              fill
-              className="object-cover object-top"
-              sizes="(max-w-1024px) 100vw, 40vw"
-              priority
-            />
+          {/* Section label */}
+          <div className="flex items-center gap-4 mb-16">
+            <div className="w-10 h-px bg-neutral-300" />
+            <span
+              style={{ fontSize: "11px", letterSpacing: "0.25em" }}
+              className="font-medium uppercase text-neutral-500"
+            >
+              From the Chairman
+            </span>
           </div>
 
-          {/* Quote & Brand Anchor */}
-          <div className="relative">
-            <span className="absolute -top-16 -left-8 text-[14rem] font-serif text-neutral-50 leading-none select-none pointer-events-none -z-10 opacity-60">
-              “
-            </span>
-            <blockquote className="relative z-10">
-              <p className="text-3xl md:text-4xl lg:text-5xl font-black text-neutral-900 leading-[1.1] tracking-tight mb-12">
-                “ We don’t just extract minerals.{" "}
-                <span ref={quoteHighlightRef} className="quote-highlight text-neutral-200">
-                  We extract potential from the earth, and from our people.
-                </span>
-                {" "}”
-              </p>
-              <footer className="flex items-center gap-6">
-                <div>
-                  <cite className="not-italic text-lg font-bold text-neutral-900 block mb-0.5">
-                    Raj Talreja
-                  </cite>
-                  <p className="text-xs md:text-sm text-neutral-400 font-medium tracking-wide uppercase">
-                    Chairman at SKT Global Mining &amp; Services Limited
-                  </p>
+          {/* 12-col grid — portrait left, quote right */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
+
+            {/* Portrait — col-span-5 */}
+            <motion.div
+              initial={{ opacity: 0, x: -24 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.9, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+              className="lg:col-span-5"
+            >
+              <div className="relative max-w-[440px] mx-auto lg:mx-0">
+                {/* Offset border accent */}
+                <div className="absolute -bottom-4 -right-4 w-full h-full rounded-sm border border-neutral-200 -z-10" />
+                {/* Image */}
+                <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-neutral-100">
+                  <Image
+                    alt="Raj Talreja — Chairman & Managing Director"
+                    src="/Raj Sir Photo.webp"
+                    fill
+                    className="object-cover object-top transition-all duration-700"
+                    style={{ filter: "grayscale(18%)" }}
+                    sizes="(max-width:1024px) 100vw, 40vw"
+                    priority
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLImageElement).style.filter = "grayscale(0%)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLImageElement).style.filter = "grayscale(18%)";
+                    }}
+                  />
                 </div>
-              </footer>
-            </blockquote>
+              </div>
+            </motion.div>
+
+            {/* Quote — col-span-7 */}
+            <motion.div
+              initial={{ opacity: 0, x: 24 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.9, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="lg:col-span-7"
+            >
+              {/* Decorative open quote mark */}
+              <div
+                aria-hidden="true"
+                style={{
+                  fontFamily: "var(--font-playfair), 'Playfair Display', Georgia, serif",
+                  fontSize: "96px",
+                  lineHeight: 0.85,
+                  color: "#d4d4d4",
+                  userSelect: "none",
+                  marginBottom: "16px",
+                }}
+              >
+                &ldquo;
+              </div>
+
+              {/* Quote text — Playfair, weight 300, elegant */}
+              <blockquote>
+                <p
+                  style={{
+                    fontFamily: "var(--font-playfair), 'Playfair Display', Georgia, serif",
+                    fontSize: "clamp(24px, 3vw, 38px)",
+                    fontWeight: 300,
+                    lineHeight: 1.28,
+                    letterSpacing: "-0.01em",
+                    color: "#1a1a1a",
+                    maxWidth: "100%",
+                    marginBottom: "40px",
+                  }}
+                >
+                  We don&apos;t just extract minerals. <br className="hidden md:inline" />{" "}<ScrollAnimatedQuote />
+                </p>
+
+                {/* Signature block */}
+                <footer
+                  style={{
+                    borderTop: "1px solid #e5e5e5",
+                    paddingTop: "28px",
+                    maxWidth: "100%",
+                  }}
+                >
+                  <div className="flex items-end justify-between gap-6">
+                    {/* Name + title */}
+                    <div>
+                      <cite
+                        className="not-italic block"
+                        style={{
+                          fontSize: "17px",
+                          fontWeight: 500,
+                          letterSpacing: "-0.01em",
+                          color: "#171717",
+                          marginBottom: "5px",
+                        }}
+                      >
+                        Raj Talreja
+                      </cite>
+                      <p
+                        style={{
+                          fontSize: "10px",
+                          fontWeight: 500,
+                          letterSpacing: "0.2em",
+                          textTransform: "uppercase",
+                          color: "#737373",
+                        }}
+                      >
+                        Chairman · SKT Global Mining &amp; Services
+                      </p>
+                    </div>
+                  </div>
+                </footer>
+              </blockquote>
+            </motion.div>
+
           </div>
         </motion.div>
 

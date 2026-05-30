@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { Navbar } from "@/components/organisms/Navbar";
 import { Footer } from "@/components/organisms/Footer";
 import { generateMetadata as genMeta, jsonLd } from "@/lib/seo";
+import { MobileWarningOverlay } from "@/components/molecules/MobileWarningOverlay";
 import "@/app/globals.css";
 
 // ─── Fonts ────────────────────────────────────────────────────────────────────
@@ -79,13 +80,7 @@ export default function RootLayout({
       <body className="font-sans" suppressHydrationWarning>
         <SmoothScrollProvider>
           <ThemeProvider>
-            {/* Skip navigation for accessibility */}
-            <a
-              href="#main-content"
-              className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-[100] bg-white text-neutral-900 px-4 py-2 text-sm font-medium border border-neutral-900"
-            >
-              Skip to main content
-            </a>
+            <MobileWarningOverlay />
 
             <Navbar />
 

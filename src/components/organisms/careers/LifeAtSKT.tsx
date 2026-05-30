@@ -3,6 +3,7 @@
 import { JSX, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Badge } from "@/components/atoms/Badge";
+import Image from "next/image";
 
 interface Story {
   category: string;
@@ -87,11 +88,13 @@ export function LifeAtSKT(): JSX.Element {
             >
               {/* Image Frame */}
               <div className="relative aspect-[16/10] overflow-hidden bg-neutral-900 border-b border-neutral-800">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={story.img}
                   alt={story.author}
-                  className="w-full h-full object-cover grayscale brightness-90 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 30vw"
+                  className="object-cover grayscale brightness-90 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+                  priority={idx === 0}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/90 via-transparent to-transparent" />
                 <div className="absolute bottom-4 left-6">

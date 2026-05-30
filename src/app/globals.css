@@ -226,3 +226,126 @@
     page-break-after: avoid;
   }
 }
+
+/* ==========================================================================
+   MOBILE WARNING OVERLAY
+   ========================================================================== */
+
+#mobile-warning-overlay {
+  position: fixed;
+  inset: 0;
+  background: #101d42; /* Premium Deep navy */
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+  opacity: 1;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+.mobile-warning-content {
+  text-align: center;
+  max-width: 320px;
+  padding: 24px;
+}
+
+.mobile-warning-content h2 {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+}
+
+.mobile-warning-content p {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 14px;
+  opacity: 0.75;
+  line-height: 1.6;
+}
+
+/* Lottie Container */
+.mobile-warning-lottie-container {
+  width: 100%;
+  max-width: 240px;
+  height: 80px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hidden state */
+#mobile-warning-overlay.hidden-overlay {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* DESKTOP: never show */
+@media (min-width: 1024px) {
+  #mobile-warning-overlay {
+    display: none !important;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  #mobile-warning-overlay {
+    transition: none;
+  }
+  .mobile-warning-progress-bar {
+    animation: none !important;
+  }
+}
+
+/* Progress Bar Container */
+.mobile-warning-progress-container {
+  width: 100%;
+  max-width: 200px;
+  height: 2px; /* Super thin, sleek and premium */
+  background: rgba(255, 255, 255, 0.12);
+  margin: 24px auto 0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+/* Animating progress bar line */
+.mobile-warning-progress-bar {
+  height: 100%;
+  background: #e63946; /* Matching accent color */
+  width: 100%;
+  transform-origin: left center;
+  animation: shrinkBar 5s linear forwards;
+}
+
+@keyframes shrinkBar {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+/* Timer Countdown Text */
+.mobile-warning-timer-text {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: #ffffff;
+  opacity: 0.6;
+  margin-top: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+/* Suppress development error overlays for hydration mismatches */
+nextjs-portal,
+#nextjs-portal {
+  display: none !important;
+}
+

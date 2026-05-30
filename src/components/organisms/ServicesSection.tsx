@@ -2,111 +2,24 @@
 
 import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Wrench, Package, Truck, Shield, Network, Monitor, Users, Settings, TrendingUp, ShieldCheck, Building2, Globe } from "lucide-react";
+import {
+  Wrench, Package, Truck, Shield, Network, Monitor,
+  Users, Settings, TrendingUp, ShieldCheck, Building2, Globe,
+  type LucideIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { JSX } from "react";
 import { OperationalScaleSection } from "./OperationalScaleSection";
+import { CARDS } from "@/lib/servicesData";
+export type { ServiceCard } from "@/lib/servicesData";
 
-// ─── Card data ────────────────────────────────────────────────────────────────
+// ─── Icon lookup (client-side only) ──────────────────────────────────────────
+const ICON_MAP: Record<string, LucideIcon> = {
+  Wrench, Package, Truck, Shield, Network, Monitor,
+  Users, Settings, TrendingUp, ShieldCheck, Building2, Globe,
+};
 
-const CARDS = [
-  {
-    num: "01",
-    icon: Wrench,
-    title: "Underground Workshop",
-    desc: "A fully integrated underground maintenance ecosystem engineered to support uninterrupted mining operations, with 24/7 repair systems and rapid-response servicing.",
-    tags: ["24/7 Repair", "Technical Support", "Rapid Response"],
-    bgImage: "/Underground Workshop.png",
-  },
-  {
-    num: "02",
-    icon: Package,
-    title: "Strategic Warehousing",
-    desc: "Centralised warehousing and inventory systems designed to maintain continuous operational readiness backed by a spare parts inventory valued at over US$3M.",
-    tags: ["US$3M+ Inventory", "Spare Parts", "minimum downtime"],
-    bgImage: "https://picsum.photos/seed/skt2/800/1200",
-  },
-  {
-    num: "03",
-    icon: Truck,
-    title: "Mechanised Fleet",
-    desc: "A world-class mechanised underground mining fleet including loaders, mine trucks, drill rigs, boomers, bolters, and advanced support equipment.",
-    tags: ["Drill Rigs", "Mine Trucks", "Loaders & Bolters"],
-    bgImage: "https://picsum.photos/seed/skt3/800/1200",
-  },
-  {
-    num: "04",
-    icon: Shield,
-    title: "Rescue Systems",
-    desc: "Advanced underground safety and emergency response infrastructure with integrated rescue chambers, monitoring systems, and preparedness protocols.",
-    tags: ["Rescue Chambers", "Emergency Protocol", "Live Monitoring"],
-    bgImage: "https://picsum.photos/seed/skt4/800/1200",
-  },
-  {
-    num: "05",
-    icon: Network,
-    title: "Logistics Network",
-    desc: "An interconnected logistics ecosystem enabling continuous workforce mobility, equipment deployment, material handling, and uninterrupted production flow.",
-    tags: ["Material Handling", "Fleet Dispatch", "Workforce Mobility"],
-    bgImage: "https://picsum.photos/seed/skt5/800/1200",
-  },
-  {
-    num: "06",
-    icon: Monitor,
-    title: "Operational Command",
-    desc: "A unified operational management system integrating engineering, mining, maintenance, logistics, and oversight into one coordinated command infrastructure.",
-    tags: ["Unified Control", "Production Planning", "Workforce Allocation"],
-    bgImage: "https://picsum.photos/seed/skt6/800/1200",
-  },
-  {
-    num: "07",
-    icon: Users,
-    title: "Workforce Facilities",
-    desc: "Purpose-built workforce infrastructure for local and international teams, including accommodation, transportation, welfare support, and 24-hour catering.",
-    tags: ["Accommodation", "Catering 24/7", "Welfare Support"],
-    bgImage: "https://picsum.photos/seed/skt7/800/1200",
-  },
-  {
-    num: "08",
-    icon: Settings,
-    title: "Engineering & Maintenance",
-    desc: "Dedicated engineering systems ensuring equipment reliability and continuous underground performance through preventive maintenance and rapid intervention.",
-    tags: ["Preventive Maint.", "Max Availability", "Specialised Teams"],
-    bgImage: "https://picsum.photos/seed/skt8/800/1200",
-  },
-  {
-    num: "09",
-    icon: TrendingUp,
-    title: "Production Development",
-    desc: "Accelerated underground mine development focused on long-term production growth and sustainability through mechanisation and modern mining methodologies.",
-    tags: ["Mechanisation", "Growth Strategy", "Sustainability"],
-    bgImage: "https://picsum.photos/seed/skt9/800/1200",
-  },
-  {
-    num: "10",
-    icon: ShieldCheck,
-    title: "Safety & Compliance",
-    desc: "A safety-first operational framework embedded across every aspect of underground mining with rigorous compliance, training, and workforce protection protocols.",
-    tags: ["Zero Harm", "Compliance Systems", "Continuous Training"],
-    bgImage: "https://picsum.photos/seed/skt10/800/1200",
-  },
-  {
-    num: "11",
-    icon: Building2,
-    title: "Infrastructure Systems",
-    desc: "A large-scale operational ecosystem including workshops, offices, warehousing, utility systems, transportation networks, and integrated support infrastructure.",
-    tags: ["Utility Systems", "Workshops", "Support Infra"],
-    bgImage: "https://picsum.photos/seed/skt11/800/1200",
-  },
-  {
-    num: "12",
-    icon: Globe,
-    title: "Future Expansion",
-    desc: "SKT Global is positioning for regional expansion through modernisation, operational scale, and strategic investment across multiple mining regions in Africa.",
-    tags: ["Africa Expansion", "Scale-Up", "New Regions"],
-    bgImage: "https://picsum.photos/seed/skt12/800/1200",
-  },
-];
+
 
 // Duplicate for seamless infinite loop
 const ROW_A = [...CARDS, ...CARDS];
@@ -114,14 +27,14 @@ const ROW_A = [...CARDS, ...CARDS];
 // ─── Single Card ─────────────────────────────────────────────────────────────
 
 function SliderCard({ card, verticalOffset = 0 }: { card: typeof CARDS[0]; verticalOffset?: number }) {
-  const Icon = card.icon;
+  const Icon = ICON_MAP[card.iconName] ?? Wrench;
   const hasBg = !!card.bgImage;
 
   return (
     <div
-      className={`group relative flex-shrink-0 w-[350px] h-[520px] mx-3 rounded-[24px] p-7 cursor-default select-none overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-        hasBg 
-          ? "text-white bg-neutral-950 border border-white/10" 
+      className={`group relative flex-shrink-0 w-[350px] h-[520px] mx-3 rounded-2xl cursor-default select-none overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        hasBg
+          ? "text-white bg-neutral-950 border border-white/10"
           : "bg-white text-neutral-900 border border-neutral-100/70"
       }`}
       style={{
@@ -131,89 +44,88 @@ function SliderCard({ card, verticalOffset = 0 }: { card: typeof CARDS[0]; verti
       }}
       onMouseEnter={(e) => {
         (e.currentTarget as HTMLDivElement).style.transform = `translateY(${verticalOffset - 8}px)`;
-        (e.currentTarget as HTMLDivElement).style.boxShadow = hasBg 
-          ? "0 30px 60px rgba(0,0,0,0.5)" 
+        (e.currentTarget as HTMLDivElement).style.boxShadow = hasBg
+          ? "0 30px 60px rgba(0,0,0,0.5)"
           : "0 20px 48px rgba(0,0,0,0.08)";
-        if (!hasBg) {
-          (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(0,0,0,0.12)";
-        } else {
-          (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.2)";
-        }
+        (e.currentTarget as HTMLDivElement).style.borderColor = hasBg
+          ? "rgba(255,255,255,0.2)"
+          : "rgba(0,0,0,0.12)";
       }}
       onMouseLeave={(e) => {
         (e.currentTarget as HTMLDivElement).style.transform = `translateY(${verticalOffset}px)`;
-        (e.currentTarget as HTMLDivElement).style.boxShadow = hasBg 
-          ? "0 10px 40px rgba(0,0,0,0.3)" 
+        (e.currentTarget as HTMLDivElement).style.boxShadow = hasBg
+          ? "0 10px 40px rgba(0,0,0,0.3)"
           : "0 4px 24px rgba(0,0,0,0.03)";
-        if (!hasBg) {
-          (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(0,0,0,0.07)";
-        } else {
-          (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.1)";
-        }
+        (e.currentTarget as HTMLDivElement).style.borderColor = hasBg
+          ? "rgba(255,255,255,0.1)"
+          : "rgba(0,0,0,0.07)";
       }}
     >
-      {/* Background Image & Overlay */}
+      {/* Background Image */}
       {hasBg && (
-        <>
-          {/* Full Cover Image */}
-          <div
-            className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110"
-            style={{ backgroundImage: `url("${encodeURI(card.bgImage)}")` }}
-          />
-          {/* Full Dark Overlay Gradient */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
-          {/* Frosted Glass Overlay for Text Area */}
-          <div className="absolute inset-x-0 bottom-0 h-[65%] bg-gradient-to-t from-neutral-950 via-neutral-950/85 to-transparent backdrop-blur-md transition-opacity duration-300" />
-        </>
+        <div
+          className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110"
+          style={{ backgroundImage: `url("${encodeURI(card.bgImage)}")` }}
+        />
       )}
 
-      {/* Ghost Number / Top Right Layout */}
+      {/* Bottom 65% gradient — text area only, image stays visible on top */}
+      {hasBg && (
+        <div className="absolute inset-x-0 bottom-0 h-[65%] bg-gradient-to-t from-black/90 via-black/60 to-transparent" />
+      )}
+
+      {/* Ghost Number — light cards only */}
       {!hasBg && (
-        <span className="absolute top-6 right-7 text-6xl font-black text-neutral-100/60 select-none pointer-events-none transition-colors duration-300">
+        <span className="absolute top-6 right-7 text-6xl font-black text-neutral-100/60 select-none pointer-events-none">
           {card.num}
         </span>
       )}
 
-      {/* Top Left Layout - Large elegant Icon container for Light Cards */}
+      {/* Icon — light cards only, top left */}
       {!hasBg && (
         <div className="absolute top-6 left-7 w-12 h-12 flex items-center justify-center rounded-2xl bg-neutral-50 border border-neutral-100 text-neutral-800 transition-all duration-300 group-hover:scale-105">
           <Icon size={20} strokeWidth={1.5} />
         </div>
       )}
 
-      {/* Align Content to the bottom */}
-      <div className="relative z-10 flex flex-col justify-end h-full">
-        {/* Dynamic Icon above Title for Dark Cards */}
+      {/* Card content pinned to bottom */}
+      <div className="relative z-10 flex flex-col justify-end h-full p-7">
+        {/* Icon above title — dark cards only */}
         {hasBg && (
-          <div className="w-10 h-10 flex items-center justify-center rounded-xl mb-3.5 bg-white/10 border border-white/10 text-white backdrop-blur-sm transition-all duration-300 group-hover:scale-105">
-            <Icon size={18} className="text-white" strokeWidth={1.5} />
+          <div className="w-9 h-9 flex items-center justify-center rounded-xl mb-3 bg-white/10 border border-white/10 backdrop-blur-sm transition-all duration-300 group-hover:scale-105">
+            <Icon size={16} className="text-white" strokeWidth={1.5} />
           </div>
         )}
 
-        {/* Text Area */}
-        <h3 
-          className={`text-xl md:text-2xl font-bold tracking-tight mb-2 transition-colors duration-300 ${
+        {/* Title */}
+        <h3
+          style={{ fontSize: "24px", fontWeight: 700, letterSpacing: "-0.02em", marginBottom: "6px" }}
+          className={`leading-tight transition-colors duration-300 ${
             hasBg ? "text-white" : "text-neutral-900"
           }`}
         >
           {card.title}
         </h3>
-        <p 
-          className={`text-xs leading-relaxed mb-4 max-w-[280px] transition-colors duration-300 ${
-            hasBg ? "text-neutral-300" : "text-neutral-500"
+
+        {/* Description */}
+        <p
+          style={{ fontSize: "13px", opacity: 0.7, lineHeight: "1.55", marginBottom: "12px" }}
+          className={`line-clamp-2 max-w-[260px] transition-colors duration-300 ${
+            hasBg ? "text-neutral-100" : "text-neutral-600"
           }`}
         >
           {card.desc}
         </p>
 
-        {/* Tags */}
-        <div className="flex flex-wrap gap-1.5 mb-6">
-          {card.tags.map((tag) => (
+        {/* Tags — max 2 */}
+        <div className="flex flex-wrap gap-1.5 mb-5">
+          {card.tags.slice(0, 2).map((tag) => (
             <span
               key={tag}
-              className={`text-[10px] font-semibold tracking-wider px-2.5 py-1 rounded-full uppercase transition-all duration-300 ${
+              style={{ fontSize: "10px", letterSpacing: "0.08em" }}
+              className={`font-semibold uppercase px-2.5 py-1 rounded-full transition-all duration-300 ${
                 hasBg
-                  ? "text-neutral-200 bg-white/10 border border-white/5 backdrop-blur-sm group-hover:bg-white/15"
+                  ? "text-neutral-200 bg-white/10 border border-white/10 backdrop-blur-sm group-hover:bg-white/15"
                   : "text-neutral-500 bg-neutral-50 border border-neutral-100"
               }`}
             >
@@ -222,23 +134,30 @@ function SliderCard({ card, verticalOffset = 0 }: { card: typeof CARDS[0]; verti
           ))}
         </div>
 
-        {/* Action Button matching Santorini/Swiss Chalet style */}
-        <button 
-          className={`w-full font-bold py-3 rounded-full transition-all duration-300 text-xs uppercase tracking-wider ${
-            hasBg 
-              ? "bg-white hover:bg-neutral-100 text-neutral-950 shadow-lg" 
-              : "border border-neutral-200 hover:bg-neutral-900 hover:text-white hover:border-neutral-900 text-neutral-900"
+        {/* Divider + Explore link */}
+        <div
+          className={`border-t pt-4 transition-colors duration-300 ${
+            hasBg ? "border-white/10" : "border-neutral-100"
           }`}
         >
-          {hasBg ? "Explore Workshop" : "Learn More"}
-        </button>
+          <Link
+            href={`/services/${card.slug}`}
+            style={{ fontSize: "13px", fontWeight: 500 }}
+            className={`inline-flex items-center gap-1.5 transition-all duration-300 group-hover:gap-2.5 ${
+              hasBg
+                ? "text-white/70 group-hover:text-white"
+                : "text-neutral-500 group-hover:text-neutral-900"
+            }`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            Explore →
+          </Link>
+        </div>
       </div>
 
-      {/* Bottom accent line — appears on hover for light cards */}
+      {/* Bottom accent line — light cards hover */}
       {!hasBg && (
-        <div
-          className="absolute bottom-0 left-0 right-0 h-[3px] bg-neutral-900 rounded-b-2xl origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500"
-        />
+        <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-neutral-900 rounded-b-2xl origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
       )}
     </div>
   );
@@ -268,7 +187,24 @@ export function ServicesSection(): JSX.Element {
     let velA = 0;
     let currentSpeedA = SPEED;
 
-    const halfA = rowA.scrollWidth / 2;
+    // Track dynamic half width
+    let halfA = rowA!.scrollWidth / 2 || 2244; // Fallback to estimated 12 cards * 374px / 2 = 2244px
+
+    const updateHalfWidth = () => {
+      const w = rowA!.scrollWidth;
+      if (w > 0) {
+        halfA = w / 2;
+      }
+    };
+
+    // Use ResizeObserver to update width on window resize, image load, etc.
+    const resizeObserver = new ResizeObserver(() => {
+      updateHalfWidth();
+    });
+    resizeObserver.observe(rowA!);
+
+    // Initial check
+    updateHalfWidth();
 
     // ── wrap helper ───────────────────────────────────────────────────────
     function wrap(pos: number, half: number, dir: 1 | -1) {
@@ -280,16 +216,25 @@ export function ServicesSection(): JSX.Element {
     }
 
     // ── RAF tick ──────────────────────────────────────────────────────────
-    function tick() {
+    let lastTime = performance.now();
+
+    function tick(now: number) {
+      const delta = (now - lastTime) / 16.666; // Normalize to 60fps (16.67ms)
+      lastTime = now;
+
+      // Limit delta to avoid huge jumps on tab switch/suspend
+      const d = Math.min(delta, 3);
+
       if (!paused && !dragging) {
-        currentSpeedA += (SPEED - currentSpeedA) * RESUME_EASE;
-        posA = wrap(posA - currentSpeedA, halfA, -1);
+        currentSpeedA += (SPEED - currentSpeedA) * RESUME_EASE * d;
+        posA = wrap(posA - currentSpeedA * d, halfA, -1);
       }
 
       if (dragging) {
-        posA = wrap(posA + velA, halfA, -1);
+        // Position updated directly in move handler; decay dragging velocity to avoid jumps
+        velA *= Math.pow(0.8, d);
       } else if (paused && !dragging && Math.abs(velA) > 0.05) {
-        velA *= INERTIA;
+        velA *= Math.pow(INERTIA, d);
         posA = wrap(posA + velA, halfA, -1);
       }
 
@@ -325,13 +270,13 @@ export function ServicesSection(): JSX.Element {
       if (!dragging) return;
       const dx = (e.clientX - dragStartX) * DRAG_FACTOR;
       dragStartX = e.clientX;
+      posA = wrap(posA + dx, halfA, -1);
       velA = dx;
     }
     function onMouseUp() {
       if (!dragging) return;
       dragging = false;
       stage!.style.cursor = paused ? 'grab' : '';
-      // velA now carries momentum — tick() will decay it
     }
 
     // ── Touch ─────────────────────────────────────────────────────────────
@@ -350,6 +295,7 @@ export function ServicesSection(): JSX.Element {
       if (!touch) return;
       const dx = (touch.clientX - touchStartX) * DRAG_FACTOR;
       touchStartX = touch.clientX;
+      posA = wrap(posA + dx, halfA, -1);
       velA = dx;
     }
     function onTouchEnd() {
@@ -369,6 +315,7 @@ export function ServicesSection(): JSX.Element {
 
     return () => {
       cancelAnimationFrame(rafRef.current);
+      resizeObserver.disconnect();
       stage.removeEventListener('mouseenter', onEnter);
       stage.removeEventListener('mouseleave', onLeave);
       stage.removeEventListener('mousedown', onMouseDown);
@@ -440,8 +387,6 @@ export function ServicesSection(): JSX.Element {
         ref={stageRef}
         className="relative"
         style={{
-          maskImage: "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)",
-          WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)",
           userSelect: "none",
         }}
       >
