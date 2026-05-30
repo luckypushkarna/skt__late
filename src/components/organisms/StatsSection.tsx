@@ -45,17 +45,17 @@ const PILLARS = [
 
 // ─── Stack layout offsets for inactive cards ─────────────────────────────────
 const STACK_OFFSETS = [
-  { x: 0,   y: 0,    scale: 1,    z: 50, opacity: 1    }, // active (front)
-  { x: 12,  y: -12,  scale: 1,    z: 40, opacity: 0.72 }, // 2nd
-  { x: 22,  y: -22,  scale: 1,    z: 30, opacity: 0.50 }, // 3rd
-  { x: 30,  y: -30,  scale: 1,    z: 20, opacity: 0.32 }, // 4th
-  { x: 37,  y: -37,  scale: 1,    z: 10, opacity: 0.18 }, // 5th (back)
+  { x: 0, y: 0, scale: 1, z: 50, opacity: 1 }, // active (front)
+  { x: 12, y: -12, scale: 1, z: 40, opacity: 0.72 }, // 2nd
+  { x: 22, y: -22, scale: 1, z: 30, opacity: 0.50 }, // 3rd
+  { x: 30, y: -30, scale: 1, z: 20, opacity: 0.32 }, // 4th
+  { x: 37, y: -37, scale: 1, z: 10, opacity: 0.18 }, // 5th (back)
 ];
 
 export function StatsSection(): JSX.Element {
-  const sectionRef   = useRef<HTMLDivElement>(null);
-  const headlineRef  = useRef<HTMLHeadingElement>(null);
-  const pillarsRef   = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const headlineRef = useRef<HTMLHeadingElement>(null);
+  const pillarsRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const autoRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -232,9 +232,8 @@ export function StatsSection(): JSX.Element {
                   <button
                     key={p.num}
                     onClick={() => handlePillarClick(i)}
-                    className={`relative w-full text-left group flex gap-5 items-start pt-5 pb-6 pl-6 border-b border-neutral-200 last:border-0 transition-colors duration-300 ${
-                      isActive ? "bg-white shadow-sm" : "bg-transparent hover:bg-white/40"
-                    }`}
+                    className={`relative w-full text-left group flex gap-5 items-start pt-5 pb-6 pl-6 border-b border-neutral-200 last:border-0 transition-colors duration-300 ${isActive ? "bg-white shadow-sm" : "bg-transparent hover:bg-white/40"
+                      }`}
                   >
                     {/* Active Accent Left Border Indicator (Absolute to maintain stable height) */}
                     {isActive && (
@@ -248,11 +247,10 @@ export function StatsSection(): JSX.Element {
                     {/* Badge Container */}
                     <div className="flex-shrink-0 mt-0.5 flex flex-col items-center">
                       <span
-                        className={`w-8 h-8 rounded-sm border flex items-center justify-center text-[10px] font-black tracking-wider transition-all duration-300 ${
-                          isActive
+                        className={`w-8 h-8 rounded-sm border flex items-center justify-center text-[10px] font-black tracking-wider transition-all duration-300 ${isActive
                             ? "border-neutral-900 bg-neutral-900 text-white"
                             : "border-neutral-300 bg-white text-neutral-700 group-hover:border-neutral-700"
-                        }`}
+                          }`}
                       >
                         {p.num}
                       </span>
@@ -261,9 +259,8 @@ export function StatsSection(): JSX.Element {
                     {/* Content Box */}
                     <div className="flex-1 min-w-0">
                       <h3
-                        className={`text-sm font-bold tracking-wide transition-colors duration-300 ${
-                          isActive ? "text-neutral-900 font-extrabold" : "text-neutral-700"
-                        }`}
+                        className={`text-sm font-bold tracking-wide transition-colors duration-300 ${isActive ? "text-neutral-900 font-extrabold" : "text-neutral-700"
+                          }`}
                       >
                         {p.title}
                       </h3>
@@ -380,11 +377,10 @@ export function StatsSection(): JSX.Element {
                   <button
                     key={i}
                     onClick={() => handlePillarClick(i)}
-                    className={`rounded-full transition-all duration-400 ${
-                      active === i
+                    className={`rounded-full transition-all duration-400 ${active === i
                         ? "w-6 h-1.5 bg-neutral-900"
                         : "w-1.5 h-1.5 bg-neutral-300 hover:bg-neutral-500"
-                    }`}
+                      }`}
                     aria-label={`Go to safety pillar ${i + 1}`}
                   />
                 ))}

@@ -111,118 +111,89 @@ const CARDS = [
 // Duplicate for seamless infinite loop
 const ROW_A = [...CARDS, ...CARDS];
 
-// ─── Single Card ─────────────────────────────────────────────────────────────
+// ─── Single Card (REDESIGNED) ────────────────────────────────────────────────
 
-function SliderCard({ card, verticalOffset = 0 }: { card: typeof CARDS[0]; verticalOffset?: number }) {
+function SliderCard({ card }: { card: typeof CARDS[0] }) {
   const Icon = card.icon;
-  const hasBg = !!card.bgImage;
 
   return (
     <div
-      className={`group relative flex-shrink-0 w-[350px] h-[520px] mx-3 rounded-none p-7 cursor-default select-none overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] border border-[#E5E5E5] ${
-        hasBg 
-          ? "text-white bg-neutral-950" 
-          : "bg-white text-neutral-900"
-      }`}
+      className="group relative flex-shrink-0 w-[340px] h-[480px] mx-3 rounded-2xl cursor-default select-none overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-2 hover:shadow-2xl"
       style={{
-        transform: `translateY(${verticalOffset}px)`,
-        boxShadow: hasBg ? "0 10px 40px rgba(0,0,0,0.3)" : "0 4px 24px rgba(0,0,0,0.03)",
+        boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
         willChange: "transform",
       }}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLDivElement).style.transform = `translateY(${verticalOffset - 8}px)`;
-        (e.currentTarget as HTMLDivElement).style.boxShadow = hasBg 
-          ? "0 30px 60px rgba(0,0,0,0.5)" 
-          : "0 20px 48px rgba(0,0,0,0.08)";
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLDivElement).style.transform = `translateY(${verticalOffset}px)`;
-        (e.currentTarget as HTMLDivElement).style.boxShadow = hasBg 
-          ? "0 10px 40px rgba(0,0,0,0.3)" 
-          : "0 4px 24px rgba(0,0,0,0.03)";
-      }}
     >
-      {/* Background Image & Overlay */}
-      {hasBg && (
-        <>
-          {/* Full Cover Image */}
-          <div
-            className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110"
-            style={{ backgroundImage: `url("${encodeURI(card.bgImage)}")` }}
-          />
-          {/* Full Dark Overlay Gradient */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
-          {/* Frosted Glass Overlay for Text Area */}
-          <div className="absolute inset-x-0 bottom-0 h-[65%] bg-gradient-to-t from-neutral-950 via-neutral-950/85 to-transparent backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none pt-[10px]" />
-        </>
-      )}
+      {/* ── Image Layer (Always Visible) ── */}
+      <div
+        className="absolute inset-0 bg-cover bg-center transition-transform duration-[1500ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110"
+        style={{ backgroundImage: `url("${encodeURI(card.bgImage)}")` }}
+      />
 
-      {/* Ghost Number / Top Right Layout */}
-      {!hasBg && (
-        <span className="absolute top-6 right-7 text-6xl font-black text-neutral-100/60 select-none pointer-events-none transition-colors duration-300">
+      {/* ── Subtle top gradient for number visibility ── */}
+      <div className="absolute inset-x-0 top-0 h-[35%] bg-gradient-to-b from-black/50 via-black/10 to-transparent pointer-events-none" />
+
+      {/* ── Bottom gradient (default state - title visible) ── */}
+      <div className="absolute inset-x-0 bottom-0 h-[45%] bg-gradient-to-t from-black via-black/70 to-transparent pointer-events-none transition-all duration-700 group-hover:h-[75%] group-hover:from-black group-hover:via-black/90" />
+
+      {/* ── Top Section: Number Badge ── */}
+      <div className="absolute top-5 left-5 right-5 flex items-start justify-between z-10">
+        {/* Icon Badge */}
+        <div className="w-11 h-11 flex items-center justify-center rounded-full bg-white/10 border border-white/20 backdrop-blur-md text-white transition-all duration-500 group-hover:bg-white group-hover:text-neutral-900 group-hover:scale-110">
+          <Icon size={18} strokeWidth={1.75} />
+        </div>
+
+        {/* Number */}
+        <span className="text-[11px] font-semibold tracking-[0.25em] text-white/70 uppercase pt-3">
           {card.num}
         </span>
-      )}
+      </div>
 
-      {/* Top Left Layout - Large elegant Icon container for Light Cards */}
-      {!hasBg && (
-        <div className="absolute top-6 left-7 w-12 h-12 flex items-center justify-center rounded-2xl bg-neutral-50 border border-neutral-100 text-neutral-800 transition-all duration-300 group-hover:scale-105">
-          <Icon size={20} strokeWidth={1.5} />
-        </div>
-      )}
-
-      {/* Align Content to the bottom */}
-      <div className="relative z-10 flex flex-col justify-end h-full">
-        {/* Dynamic Icon above Title for Dark Cards */}
-        {hasBg && (
-          <div className="w-10 h-10 flex items-center justify-center rounded-xl mb-3.5 bg-white/10 border border-white/10 text-white backdrop-blur-sm transition-all duration-300 group-hover:scale-105">
-            <Icon size={18} className="text-white" strokeWidth={1.5} />
-          </div>
-        )}
-
-        {/* Text Area */}
-        <h3 
-          className={`text-xl md:text-2xl font-bold tracking-tight mb-2 transition-colors duration-300 ${
-            hasBg ? "text-white" : "text-neutral-900"
-          }`}
-        >
+      {/* ── Bottom Section: Content ── */}
+      <div className="absolute inset-x-0 bottom-0 p-6 z-10 flex flex-col">
+        
+        {/* Title (Always Visible) */}
+        <h3 className="text-xl md:text-[22px] font-semibold tracking-tight text-white leading-tight mb-2 transition-transform duration-500 group-hover:-translate-y-1">
           {card.title}
         </h3>
 
-        {/* Expanding Content Wrapper on Hover */}
-        <div className="max-h-0 opacity-0 group-hover:max-h-[350px] group-hover:opacity-100 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden group-hover:pt-[10px]">
-          <p 
-            className={`text-xs leading-relaxed mb-4 max-w-[280px] transition-colors duration-300 ${
-              hasBg ? "text-neutral-300" : "text-neutral-500"
-            }`}
-          >
-            {card.desc}
-          </p>
+        {/* Hover Reveal Area */}
+        <div className="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]">
+          <div className="overflow-hidden">
+            
+            {/* Description */}
+            <p className="text-[12.5px] leading-relaxed text-white/75 mb-4 pt-1">
+              {card.desc}
+            </p>
 
-          {/* Tags */}
-          <div className="flex flex-wrap gap-1.5 mb-2">
-            {card.tags.map((tag) => (
-              <span
-                key={tag}
-                className={`text-[10px] font-semibold tracking-wider px-2.5 py-1 rounded-full uppercase transition-all duration-300 ${
-                  hasBg
-                    ? "text-neutral-200 bg-white/10 border border-white/5 backdrop-blur-sm group-hover:bg-white/15"
-                    : "text-neutral-500 bg-neutral-50 border border-neutral-100"
-                }`}
-              >
-                {tag}
-              </span>
-            ))}
+            {/* Tags */}
+            <div className="flex flex-wrap gap-1.5 mb-4">
+              {card.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="text-[9.5px] font-medium tracking-[0.12em] uppercase px-2.5 py-1 rounded-full text-white/90 bg-white/10 border border-white/15 backdrop-blur-sm transition-all duration-300 hover:bg-white/20"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+
+            {/* Subtle Divider Line */}
+            <div className="h-px w-full bg-gradient-to-r from-white/30 via-white/10 to-transparent" />
+
+            {/* CTA Hint */}
+            <div className="flex items-center gap-2 pt-3 text-[10px] font-medium tracking-[0.2em] uppercase text-white/60">
+              <span>Explore</span>
+              <svg width="14" height="8" viewBox="0 0 14 8" fill="none">
+                <path d="M1 4H13M13 4L10 1M13 4L10 7" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+              </svg>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Bottom accent line — appears on hover for light cards */}
-      {!hasBg && (
-        <div
-          className="absolute bottom-0 left-0 right-0 h-[3px] bg-neutral-900 rounded-b-2xl origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500"
-        />
-      )}
+      {/* ── Border highlight on hover ── */}
+      <div className="absolute inset-0 rounded-2xl border border-transparent group-hover:border-white/10 transition-colors duration-500 pointer-events-none" />
     </div>
   );
 }
@@ -239,10 +210,10 @@ export function ServicesSection(): JSX.Element {
     const stage = stageRef.current;
     if (!rowA || !stage) return;
 
-    const SPEED = 0.4125;          // base auto-scroll px/frame
-    const DRAG_FACTOR = 1.2;       // how sensitive drag feels
-    const INERTIA = 0.88;          // drag inertia after release (0 = stop, 1 = never stop)
-    const RESUME_EASE = 0.06;      // how quickly speed recovers on resume
+    const SPEED = 0.4125;
+    const DRAG_FACTOR = 1.2;
+    const INERTIA = 0.88;
+    const RESUME_EASE = 0.06;
 
     let posA = 0;
     let paused = false;
@@ -253,7 +224,6 @@ export function ServicesSection(): JSX.Element {
 
     const halfA = rowA.scrollWidth / 2;
 
-    // ── wrap helper ───────────────────────────────────────────────────────
     function wrap(pos: number, half: number, dir: 1 | -1) {
       if (dir === -1 && pos <= -half) return pos + half;
       if (dir === 1 && pos >= half) return pos - half;
@@ -262,7 +232,6 @@ export function ServicesSection(): JSX.Element {
       return pos;
     }
 
-    // ── RAF tick ──────────────────────────────────────────────────────────
     function tick() {
       if (!paused && !dragging) {
         currentSpeedA += (SPEED - currentSpeedA) * RESUME_EASE;
@@ -277,13 +246,11 @@ export function ServicesSection(): JSX.Element {
       }
 
       rowA!.style.transform = `translate3d(${posA}px,0,0)`;
-
       rafRef.current = requestAnimationFrame(tick);
     }
 
     rafRef.current = requestAnimationFrame(tick);
 
-    // ── Hover pause ───────────────────────────────────────────────────────
     function onEnter() {
       paused = true;
       stage!.style.cursor = 'grab';
@@ -296,7 +263,6 @@ export function ServicesSection(): JSX.Element {
       }
     }
 
-    // ── Drag ──────────────────────────────────────────────────────────────
     function onMouseDown(e: MouseEvent) {
       dragging = true;
       dragStartX = e.clientX;
@@ -314,10 +280,8 @@ export function ServicesSection(): JSX.Element {
       if (!dragging) return;
       dragging = false;
       stage!.style.cursor = paused ? 'grab' : '';
-      // velA now carries momentum — tick() will decay it
     }
 
-    // ── Touch ─────────────────────────────────────────────────────────────
     let touchStartX = 0;
     function onTouchStart(e: TouchEvent) {
       const touch = e.touches[0];
@@ -363,90 +327,82 @@ export function ServicesSection(): JSX.Element {
     };
   }, []);
 
-  // Removing alternating vertical offsets to keep all cards perfectly aligned
-  const vertOffsets = [0, 0, 0, 0, 0, 0];
-
   return (
     <>
       <section
         id="services"
-      className="bg-white overflow-hidden"
-      aria-labelledby="services-heading"
-      style={{ paddingTop: "96px", paddingBottom: "96px" }}
-    >
-      {/* ── Header ── */}
-      <div className="max-w-screen-xl mx-auto px-6 lg:px-12 mb-16">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-          <div>
-            <motion.p
+        className="bg-white overflow-hidden"
+        aria-labelledby="services-heading"
+        style={{ paddingTop: "96px", paddingBottom: "96px" }}
+      >
+        {/* ── Header ── */}
+        <div className="max-w-screen-xl mx-auto px-6 lg:px-12 mb-16">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+            <div>
+              <motion.p
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+                className="text-xs font-bold tracking-[0.28em] text-neutral-400 uppercase mb-5"
+              >
+                What We Do
+              </motion.p>
+
+              <motion.h2
+                id="services-heading"
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                className="text-5xl md:text-6xl font-black text-neutral-900 tracking-tight leading-none"
+              >
+                Core
+                <br />
+                <span className="text-neutral-300">Capabilities</span>
+              </motion.h2>
+            </div>
+
+            <motion.div
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="text-xs font-bold tracking-[0.28em] text-neutral-400 uppercase mb-5"
+              transition={{ duration: 0.5, delay: 0.2 }}
             >
-              What We Do
-            </motion.p>
-
-            <motion.h2
-              id="services-heading"
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="text-5xl md:text-6xl font-black text-neutral-900 tracking-tight leading-none"
-            >
-              Core
-              <br />
-              <span className="text-neutral-300">Capabilities</span>
-            </motion.h2>
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <Link
-              href="/services"
-              className="inline-flex items-center gap-2 text-sm font-semibold text-neutral-900 border border-neutral-200 rounded-full px-6 py-3 hover:bg-neutral-900 hover:text-white hover:border-neutral-900 transition-all duration-300"
-            >
-              View Systems →
-            </Link>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* ── Slider Stage ── */}
-      <div
-        ref={stageRef}
-        className="relative"
-        style={{
-          maskImage: "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)",
-          WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)",
-          userSelect: "none",
-        }}
-      >
-        {/* Single row → scrolls left */}
-        <div className="overflow-hidden" style={{ paddingTop: "20px", paddingBottom: "20px" }}>
-          <div
-            ref={rowARef}
-            className="flex"
-            style={{ willChange: "transform" }}
-          >
-            {ROW_A.map((card, i) => (
-              <SliderCard key={`a-${i}`} card={card} verticalOffset={vertOffsets[i % 6] ?? 0} />
-            ))}
+              <Link
+                href="/services"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-neutral-900 border border-neutral-200 rounded-full px-6 py-3 hover:bg-neutral-900 hover:text-white hover:border-neutral-900 transition-all duration-300"
+              >
+                View Systems →
+              </Link>
+            </motion.div>
           </div>
         </div>
-      </div>
 
+        {/* ── Slider Stage ── */}
+        <div
+          ref={stageRef}
+          className="relative"
+          style={{
+            userSelect: "none",
+          }}
+        >
+          <div className="overflow-hidden" style={{ paddingTop: "20px", paddingBottom: "20px" }}>
+            <div
+              ref={rowARef}
+              className="flex"
+              style={{ willChange: "transform" }}
+            >
+              {ROW_A.map((card, i) => (
+                <SliderCard key={`a-${i}`} card={card} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
 
-    </section>
-
-    {/* Operational Scale Section */}
-    <OperationalScaleSection />
-  </>
+      {/* Operational Scale Section */}
+      <OperationalScaleSection />
+    </>
   );
 }
