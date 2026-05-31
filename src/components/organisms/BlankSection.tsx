@@ -210,7 +210,7 @@ export function BlankSection(): JSX.Element {
                       y="0"
                       width="800"
                       height="500"
-                      preserveAspectRatio="xMidYMid contain"
+                      preserveAspectRatio="xMidYMid meet"
                     />
                   </g>
 

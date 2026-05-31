@@ -34,7 +34,7 @@ const securityHeaders = [
       "font-src 'self' https://fonts.gstatic.com data:",
       "img-src 'self' data: blob: https:",
       "media-src 'self' blob:",
-      "connect-src 'self' https://www.google-analytics.com",
+      "connect-src 'self' https://www.google-analytics.com https://cdn.jsdelivr.net https://unpkg.com",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
