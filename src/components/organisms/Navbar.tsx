@@ -79,8 +79,8 @@ export function Navbar(): JSX.Element {
               aria-label="Main navigation"
             >
               {NAV_ITEMS.map((item) => (
-                <NavLink 
-                  key={item.href} 
+                <NavLink
+                  key={item.href}
                   href={item.href}
                   light={!isScrolled}
                 >
@@ -91,8 +91,8 @@ export function Navbar(): JSX.Element {
 
             {/* Desktop CTA */}
             <div className="hidden lg:flex items-center gap-4">
-              <Button 
-                variant={isScrolled ? "outline" : "secondary"} 
+              <Button
+                variant={isScrolled ? "outline" : "secondary"}
                 size="sm"
               >
                 <Link href="/contact">Get in Touch</Link>

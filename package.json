@@ -19,6 +19,7 @@
     "gsap": "^3.12.5",
     "lenis": "^1.1.14",
     "lucide-react": "^0.468.0",
+    "maplibre-gl": "^5.24.0",
     "next": "15.1.11",
     "nodemailer": "^6.9.16",
     "react": "19.0.0",

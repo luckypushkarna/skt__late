@@ -124,10 +124,14 @@ export function StorySection(): JSX.Element {
   // ── GSAP scroll-driven card activation ───────────────────────────────────
   useEffect(() => {
     let ctx: { revert?: () => void } = {};
+    let mounted = true;
 
     (async () => {
       const gsap = (await import("gsap")).default;
       const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+
+      if (!mounted) return;
+
       gsap.registerPlugin(ScrollTrigger);
 
       ctx.revert = () => ScrollTrigger.getAll().forEach((t) => t.kill());
@@ -160,7 +164,10 @@ export function StorySection(): JSX.Element {
       }
     })();
 
-    return () => ctx.revert?.();
+    return () => {
+      mounted = false;
+      ctx.revert?.();
+    };
   }, []);
 
   const activePillar = SAFETY_PILLARS[activeIndex]!;

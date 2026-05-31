@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, memo } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { JSX } from "react";
+import Image from "next/image";
 import { OperationalScaleSection } from "./OperationalScaleSection";
 import { CAPABILITIES } from "@/data/capabilities";
 
@@ -12,7 +13,7 @@ const ROW_A = [...CAPABILITIES, ...CAPABILITIES];
 
 // ─── Single Card ─────────────────────────────────────────────────────────────
 
-function SliderCard({ card }: { card: typeof CAPABILITIES[0] }) {
+const SliderCard = memo(function SliderCard({ card }: { card: typeof CAPABILITIES[0] }) {
   const Icon = card.icon;
 
   return (
@@ -25,16 +26,20 @@ function SliderCard({ card }: { card: typeof CAPABILITIES[0] }) {
       }}
     >
       {/* ── Image Layer (Always Visible) ── */}
-      <div
-        className="absolute inset-0 bg-cover bg-center transition-transform duration-[1500ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110"
-        style={{ backgroundImage: `url("${encodeURI(card.bgImage)}")` }}
+      <Image
+        src={card.bgImage}
+        alt={card.title}
+        fill
+        sizes="340px"
+        className="object-cover transition-transform duration-[1500ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110"
+        loading="lazy"
       />
 
       {/* ── Subtle top gradient for number visibility ── */}
-      <div className="absolute inset-x-0 top-0 h-[35%] bg-gradient-to-b from-black/50 via-black/10 to-transparent pointer-events-none" />
+      <div className="absolute inset-x-0 top-0 h-[35%] bg-gradient-to-b from-black/50 via-black/10 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
 
       {/* ── Bottom gradient (default state - title visible) ── */}
-      <div className="absolute inset-x-0 bottom-0 h-[45%] bg-gradient-to-t from-black via-black/70 to-transparent pointer-events-none transition-all duration-700 group-hover:h-[75%] group-hover:from-black group-hover:via-black/90" />
+      <div className="absolute inset-x-0 bottom-0 h-[45%] bg-gradient-to-t from-black via-black/70 to-transparent pointer-events-none transition-all duration-700 group-hover:h-[75%] group-hover:from-black group-hover:via-black/90" style={{ zIndex: 1 }} />
 
       {/* ── Top Section: Icon + Number Badge ── */}
       <div className="absolute top-5 left-5 right-5 flex items-start justify-between z-10">
@@ -51,7 +56,7 @@ function SliderCard({ card }: { card: typeof CAPABILITIES[0] }) {
 
       {/* ── Bottom Section: Content ── */}
       <div className="absolute inset-x-0 bottom-0 p-6 z-10 flex flex-col">
-        
+
         {/* Title (Always Visible) */}
         <h3 className="text-xl md:text-[22px] font-semibold tracking-tight text-white leading-tight mb-2 transition-transform duration-500 group-hover:-translate-y-1">
           {card.title}
@@ -60,7 +65,7 @@ function SliderCard({ card }: { card: typeof CAPABILITIES[0] }) {
         {/* Hover Reveal Area */}
         <div className="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]">
           <div className="overflow-hidden">
-            
+
             {/* Description */}
             <p className="text-[12.5px] leading-relaxed text-white/75 mb-4 pt-1">
               {card.desc}
@@ -84,14 +89,14 @@ function SliderCard({ card }: { card: typeof CAPABILITIES[0] }) {
             {/* CTA Link */}
             <div className="flex items-center gap-2 pt-3 text-[10px] font-medium tracking-[0.2em] uppercase text-white/60 group-hover:text-white transition-colors">
               <span>Explore</span>
-              <svg 
-                width="14" 
-                height="8" 
-                viewBox="0 0 14 8" 
+              <svg
+                width="14"
+                height="8"
+                viewBox="0 0 14 8"
                 fill="none"
                 className="transition-transform duration-300 group-hover:translate-x-1"
               >
-                <path d="M1 4H13M13 4L10 1M13 4L10 7" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+                <path d="M1 4H13M13 4L10 1M13 4L10 7" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
               </svg>
             </div>
           </div>
@@ -99,10 +104,12 @@ function SliderCard({ card }: { card: typeof CAPABILITIES[0] }) {
       </div>
 
       {/* ── Border highlight on hover ── */}
-      <div className="absolute inset-0 rounded-2xl border border-transparent group-hover:border-white/10 transition-colors duration-500 pointer-events-none" />
+      <div className="absolute inset-0 rounded-2xl border border-transparent group-hover:border-white/10 transition-colors duration-500 pointer-events-none" style={{ zIndex: 1 }} />
     </Link>
   );
-}
+});
+
+SliderCard.displayName = "SliderCard";
 
 // ─── Main Section ─────────────────────────────────────────────────────────────
 

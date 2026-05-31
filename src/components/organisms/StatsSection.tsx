@@ -1,7 +1,7 @@
 "use client";
 
 import { JSX, useEffect, useRef, useState, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform, useInView } from "framer-motion";
 import Image from "next/image";
 
 // ─── Safety pillars — each maps to one image card ───────────────────────────
@@ -60,6 +60,17 @@ export function StatsSection(): JSX.Element {
   const [paused, setPaused] = useState(false);
   const autoRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const cardsBlockRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: cardsBlockRef,
+    offset: ["start 95%", "end 45%"],
+  });
+
+  const cardsX = useTransform(scrollYProgress, [0, 0.65], ["120px", "0px"]);
+  const cardsOpacity = useTransform(scrollYProgress, [0, 0.5], [0, 1]);
+
+  const sectionInView = useInView(sectionRef, { once: false, amount: 0.15 });
+
   // ── Auto-cycle (Runs dynamically every 3 seconds) ─────────────────────────
   const startAuto = useCallback(() => {
     if (autoRef.current) clearInterval(autoRef.current);
@@ -70,10 +81,22 @@ export function StatsSection(): JSX.Element {
     }, 3000); // 3 seconds transition
   }, [paused]);
 
+  // 1. Reset to 1st point only when the section FIRST scroll-triggers into view
   useEffect(() => {
-    startAuto();
+    if (sectionInView) {
+      setActive(0);
+    }
+  }, [sectionInView]);
+
+  // 2. Manage the auto-play loop independently of the reset triggers
+  useEffect(() => {
+    if (sectionInView) {
+      startAuto();
+    } else {
+      if (autoRef.current) clearInterval(autoRef.current);
+    }
     return () => { if (autoRef.current) clearInterval(autoRef.current); };
-  }, [startAuto, paused]);
+  }, [sectionInView, startAuto]);
 
   // ── Manual Click Handler (Resets the 3s interval gracefully) ──────────────
   const handlePillarClick = (index: number) => {
@@ -89,27 +112,23 @@ export function StatsSection(): JSX.Element {
   // ── GSAP: Headline word-reveal ─────────────────────────────────────────────
   useEffect(() => {
     let ctx: { revert: () => void } | null = null;
+    let mounted = true;
 
     const init = async () => {
       const gsap = (await import("gsap")).default;
       const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+
+      if (!mounted) return;
+
       gsap.registerPlugin(ScrollTrigger);
 
       ctx = gsap.context(() => {
         // Word-by-word headline reveal
-        if (headlineRef.current) {
-          const words = headlineRef.current.innerHTML.split(" ");
-          headlineRef.current.innerHTML = words
-            .map(
-              (w) =>
-                `<span class="safety-word inline-block" style="opacity:0;transform:translateY(40px) rotate(-2deg);filter:blur(6px)">${w}</span>`
-            )
-            .join(" ");
-
-          const wordEls = headlineRef.current.querySelectorAll<HTMLSpanElement>(".safety-word");
+        const wordEls = sectionRef.current?.querySelectorAll<HTMLSpanElement>(".safety-word");
+        if (wordEls && wordEls.length > 0) {
           gsap.to(wordEls, {
             scrollTrigger: {
-              trigger: headlineRef.current,
+              trigger: headlineRef.current || sectionRef.current,
               start: "top 80%",
               end: "top 30%",
               scrub: 0.6,
@@ -151,7 +170,10 @@ export function StatsSection(): JSX.Element {
     };
 
     init();
-    return () => ctx?.revert();
+    return () => {
+      mounted = false;
+      ctx?.revert();
+    };
   }, []);
 
   // ── Stack position for each card given active index ─────────────────────
@@ -201,7 +223,18 @@ export function StatsSection(): JSX.Element {
             id="safety-heading"
             className="text-display-md md:text-display-lg font-black text-neutral-900 leading-none tracking-tight"
           >
-            Every Worker Returns Home Safe.
+            {"Every Worker Returns Home Safe.".split(" ").map((w, index) => (
+              <span
+                key={index}
+                className="safety-word inline-block mr-[0.25em] opacity-0"
+                style={{
+                  transform: "translateY(40px) rotate(-2deg)",
+                  filter: "blur(6px)",
+                }}
+              >
+                {w}
+              </span>
+            ))}
           </h2>
 
           {/* Sub-copy */}
@@ -248,8 +281,8 @@ export function StatsSection(): JSX.Element {
                     <div className="flex-shrink-0 mt-0.5 flex flex-col items-center">
                       <span
                         className={`w-8 h-8 rounded-sm border flex items-center justify-center text-[10px] font-black tracking-wider transition-all duration-300 ${isActive
-                            ? "border-neutral-900 bg-neutral-900 text-white"
-                            : "border-neutral-300 bg-white text-neutral-700 group-hover:border-neutral-700"
+                          ? "border-neutral-900 bg-neutral-900 text-white"
+                          : "border-neutral-300 bg-white text-neutral-700 group-hover:border-neutral-700"
                           }`}
                       >
                         {p.num}
@@ -302,9 +335,10 @@ export function StatsSection(): JSX.Element {
           </div>
 
           {/* RIGHT — Premium stacked image cards (Symmetric Centered Height) */}
-          <div
-            className="lg:col-span-6 relative flex items-center justify-center"
-            style={{ height: "480px" }}
+          <motion.div
+            ref={cardsBlockRef}
+            className="lg:col-span-6 relative flex items-center justify-center w-full"
+            style={{ height: "480px", x: cardsX, opacity: cardsOpacity }}
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => { setPaused(false); startAuto(); }}
           >
@@ -378,15 +412,15 @@ export function StatsSection(): JSX.Element {
                     key={i}
                     onClick={() => handlePillarClick(i)}
                     className={`rounded-full transition-all duration-400 ${active === i
-                        ? "w-6 h-1.5 bg-neutral-900"
-                        : "w-1.5 h-1.5 bg-neutral-300 hover:bg-neutral-500"
+                      ? "w-6 h-1.5 bg-neutral-900"
+                      : "w-1.5 h-1.5 bg-neutral-300 hover:bg-neutral-500"
                       }`}
                     aria-label={`Go to safety pillar ${i + 1}`}
                   />
                 ))}
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
 
 

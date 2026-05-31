@@ -1,8 +1,19 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useMemo } from "react";
 import { JSX } from "react";
-import { Layers, MapPin, Compass } from "lucide-react";
+import { MapPin } from "lucide-react";
+import Image from "next/image";
+import { LOCATIONS, PROVINCES, type Location } from "@/data/zambiaLocations";
+
+
+const FILTERS = [
+  { id: "all",    label: "All Branches",    sublabel: "Full Network"   },
+  { id: "hq",     label: "Head Office",     sublabel: "Lusaka HQ"      },
+  { id: "major",  label: "Major Cities",   sublabel: "Provincial"     },
+  { id: "mall",   label: "Mall Branches",  sublabel: "Retail"         },
+  { id: "branch", label: "Local Branches", sublabel: "Community"      },
+];
 
 /**
  * Cinematic GSAP scroll-driven expanding circle transition.
@@ -13,15 +24,15 @@ import { Layers, MapPin, Compass } from "lucide-react";
  */
 export function BlankSection(): JSX.Element {
   // ─── States ──────────────────────────────────────────────────────────────────
-  const [activeCategory, setActiveCategory] = useState("operations");
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [hoveredLocation, setHoveredLocation] = useState<Location | null>(null);
 
-  const categories = [
-    { id: "operations", title: "Underground Operations", subtitle: "Continuous Mechanised Mining" },
-    { id: "infrastructure", title: "Infrastructure Systems", subtitle: "Engineering & Asset Support" },
-    { id: "logistics", title: "Logistics Network", subtitle: "US$3M+ Parts Inventory" },
-    { id: "support", title: "Operational Support", subtitle: "Workforce Housing & Welfare" },
-    { id: "expansion", title: "Expansion Zones", subtitle: "Regional Growth Projects" },
-  ];
+  const filteredLocations = useMemo(() =>
+    activeFilter === "all"
+      ? LOCATIONS
+      : LOCATIONS.filter((l) => l.type === activeFilter),
+    [activeFilter]
+  );
 
   // ─── Refs ────────────────────────────────────────────────────────────────────
   const containerRef = useRef<HTMLDivElement>(null);
@@ -39,10 +50,14 @@ export function BlankSection(): JSX.Element {
   // ─── GSAP ScrollTrigger Setup ─────────────────────────────────────────────
   useEffect(() => {
     let ctx: { revert: () => void } | null = null;
+    let mounted = true;
 
     const init = async () => {
       const gsap = (await import("gsap")).default;
       const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+
+      if (!mounted) return;
+
       gsap.registerPlugin(ScrollTrigger);
 
       ctx = gsap.context(() => {
@@ -140,7 +155,10 @@ export function BlankSection(): JSX.Element {
 
     init();
 
-    return () => ctx?.revert();
+    return () => {
+      mounted = false;
+      ctx?.revert();
+    };
   }, []);
 
   // ─── Render ───────────────────────────────────────────────────────────────
@@ -219,220 +237,215 @@ export function BlankSection(): JSX.Element {
         </div>
 
         {/* ══════════════════════════════════════════════════════════════════
-            LAYER 3 — Revealed content
+            LAYER 3 — Zambia Branch Network (Revealed content)
         ══════════════════════════════════════════════════════════════════ */}
         <div
           ref={revealRef}
-          className="relative lg:absolute inset-0 flex flex-col items-center justify-center lg:opacity-0 bg-[#0B0F19] lg:bg-transparent py-16 lg:py-0 lg:pt-24"
+          className="relative lg:absolute inset-0 flex flex-col items-center justify-center lg:opacity-0 bg-[#0B0F19] lg:bg-transparent py-16 lg:py-0 overflow-y-auto"
           style={{ zIndex: 50 }}
         >
-          <div className="w-full max-w-6xl mx-auto px-6 lg:px-12 flex flex-col justify-between lg:h-[78vh] text-white gap-8 lg:gap-0">
+          <div className="w-full max-w-7xl mx-auto px-6 lg:px-12 flex flex-col gap-10 text-white">
 
-            {/* Header */}
-            <div className="flex items-center justify-between border-b border-white/10 pb-6 w-full select-none">
+            {/* ── Header ── */}
+            <div className="flex items-start justify-between border-b border-white/10 pb-6 w-full select-none">
               <div>
                 <span className="text-[10px] font-extrabold tracking-[0.4em] uppercase text-white/50">
-                  UNDERGROUND ECOSYSTEM
+                  Zambia Operations
                 </span>
                 <h2 className="text-2xl font-black tracking-tight text-white mt-1">
-                  SKT GLOBAL MINING HUB
+                  SKT Branch Network
                 </h2>
+              </div>
+              {/* Stats inline */}
+              <div className="hidden sm:flex items-center gap-8 text-right">
+                <div>
+                  <p className="text-2xl font-black text-white">40+</p>
+                  <p className="text-[9px] tracking-[0.18em] uppercase text-white/40">Branches</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-black text-white">10</p>
+                  <p className="text-[9px] tracking-[0.18em] uppercase text-white/40">Provinces</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-black text-white">24/7</p>
+                  <p className="text-[9px] tracking-[0.18em] uppercase text-white/40">Service</p>
+                </div>
               </div>
             </div>
 
-            {/* Main Interactive Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center lg:my-auto w-full">
+            {/* ── Map + Sidebar Grid ── */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-              {/* Left Menu - 4 Cols */}
-              <div className="lg:col-span-4 flex flex-col gap-3 bg-black/25 backdrop-blur-md p-6 rounded-2xl border border-white/5 w-full">
-                <div className="flex items-center gap-2 text-xs font-bold text-white/50 uppercase tracking-widest mb-2 select-none">
-                  <Layers size={14} className="text-rose-500" />
-                  <span>OPERATIONAL SYSTEMS</span>
-                </div>
+              {/* Filter Sidebar — 3 Cols */}
+              <div className="lg:col-span-3 flex flex-col gap-1 bg-black/25 backdrop-blur-md p-5 rounded-2xl border border-white/5 w-full">
+                <p className="text-[10px] font-extrabold tracking-[0.28em] uppercase text-white/40 mb-3">
+                  Filter Branches
+                </p>
 
-                {categories.map((cat) => {
-                  const isActive = activeCategory === cat.id;
+                {FILTERS.map((filter) => {
+                  const isActive = activeFilter === filter.id;
                   return (
                     <button
-                      key={cat.id}
-                      onClick={() => setActiveCategory(cat.id)}
-                      className={`relative flex items-center justify-between p-4 rounded-xl text-left transition-all duration-300 group ${isActive
-                        ? "bg-white/10 border-white/20 shadow-lg"
-                        : "bg-white/0 border-transparent hover:bg-white/5"
-                        } border w-full`}
+                      key={filter.id}
+                      onClick={() => setActiveFilter(filter.id)}
+                      className={`relative flex items-center justify-between p-3.5 rounded-xl text-left transition-all duration-300 group border ${
+                        isActive
+                          ? "bg-white/8 border-white/10"
+                          : "bg-transparent border-transparent hover:bg-white/5"
+                      }`}
                     >
-                      {/* Active vertical red bar indicator */}
                       {isActive && (
-                        <div className="absolute left-0 top-1/3 bottom-1/3 w-1 bg-rose-600 rounded-r" />
+                        <div className="absolute left-0 top-1/4 bottom-1/4 w-[3px] bg-rose-600 rounded-r-full" />
                       )}
-
                       <div className="pl-3">
-                        <div className={`text-sm font-bold tracking-tight transition-colors duration-300 ${isActive ? 'text-white' : 'text-white/70 group-hover:text-white'}`}>
-                          {cat.title}
-                        </div>
-                        <div className={`text-[10px] uppercase font-semibold tracking-wider ${isActive ? 'text-white/40' : 'text-white/30'}`}>
-                          {cat.subtitle}
-                        </div>
+                        <p className={`text-sm font-bold tracking-tight transition-colors duration-300 ${
+                          isActive ? "text-white" : "text-white/60 group-hover:text-white"
+                        }`}>
+                          {filter.label}
+                        </p>
+                        <p className="text-[10px] text-white/30 font-medium">
+                          {filter.sublabel}
+                        </p>
                       </div>
-
-                      <MapPin size={14} className={`transition-all duration-300 ${isActive ? 'text-rose-500 scale-110' : 'text-white/20 group-hover:text-white/40'}`} />
+                      <MapPin
+                        size={12}
+                        className={`transition-all duration-300 ${
+                          isActive ? "text-rose-500 scale-110" : "text-white/15 group-hover:text-white/35"
+                        }`}
+                      />
                     </button>
                   );
                 })}
+
+                {/* Legend */}
+                <div className="mt-5 pt-5 border-t border-white/10 space-y-2.5">
+                  {[
+                    { color: "bg-rose-500",   label: "Head Office" },
+                    { color: "bg-amber-400",  label: "Major Cities" },
+                    { color: "bg-blue-400",   label: "Mall Branches" },
+                    { color: "bg-white/50",   label: "Local Branches" },
+                  ].map((item) => (
+                    <div key={item.label} className="flex items-center gap-2.5">
+                      <div className={`w-2 h-2 rounded-full ${item.color} shrink-0`} />
+                      <p className="text-[11px] text-white/40">{item.label}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              {/* Central Map - 8 Cols */}
-              <div className="lg:col-span-8 relative flex items-center justify-center p-4 bg-black/10 rounded-3xl border border-white/5 h-[400px] lg:h-[50vh] overflow-hidden w-full">
-                {/* Subtle tech background grid pattern */}
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.03)_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
+              {/* Map Canvas — 9 Cols */}
+              <div className="lg:col-span-9 relative">
+                <div className="relative w-full" style={{ paddingBottom: "70%" }}>
 
-                <svg
-                  viewBox="0 0 800 500"
-                  className="w-full h-full object-contain drop-shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
-                >
-                  {/* Glowing connecting routes - Using Crimson instead of Purple */}
-                  <g opacity="0.6">
-                    {/* Path 1: Copperbelt to Kitwe */}
-                    <path
-                      d="M 440 240 Q 410 210 350 180"
-                      stroke="rgba(225, 29, 72, 0.5)"
-                      strokeWidth="2"
-                      strokeDasharray="4 4"
-                      fill="none"
+                  {/* Real Zambia operations map image */}
+                  <div className="absolute inset-0 w-full h-full">
+                    <Image
+                      src="/zambia-operations-nobgs.webp"
+                      alt="SKT Zambia Branch Network Map"
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 800px"
+                      className="object-contain select-none pointer-events-none"
+                      draggable={false}
+                      loading="lazy"
                     />
-                    {/* Path 2: Kitwe to Ndola */}
-                    <path
-                      d="M 350 180 Q 390 190 420 200"
-                      stroke="rgba(225, 29, 72, 0.5)"
-                      strokeWidth="2"
-                      strokeDasharray="4 4"
-                      fill="none"
-                    />
-                    {/* Path 3: Ndola to Lusaka */}
-                    <path
-                      d="M 420 200 Q 450 270 460 330"
-                      stroke="rgba(225, 29, 72, 0.5)"
-                      strokeWidth="2"
-                      strokeDasharray="4 4"
-                      fill="none"
-                    />
-                    {/* Path 4: Lusaka to Regional Exploration */}
-                    <path
-                      d="M 460 330 Q 520 290 580 240"
-                      stroke="rgba(225, 29, 72, 0.5)"
-                      strokeWidth="2"
-                      strokeDasharray="4 4"
-                      fill="none"
-                    />
-                  </g>
+                  </div>
 
-                  {/* Detailed map image */}
-                  <image
-                    href="/zambia-map-detailed.webp"
-                    x="0"
-                    y="0"
-                    width="800"
-                    height="500"
-                    preserveAspectRatio="xMidYMid contain"
-                    opacity="0.3" /* Lower opacity for the dark ecosystem hub so glowing dots pop */
-                  />
+                  {/* Location pins */}
+                  {filteredLocations.map((location) => {
+                    const isHovered = hoveredLocation?.id === location.id;
+                    const isHQ = location.isMain === true;
 
-                  {/* Operational Nodes */}
-                  {[
-                    { id: "operations", cx: 440, cy: 240, label: "Operations" },
-                    { id: "infrastructure", cx: 380, cy: 180, label: "Infrastructure" },
-                    { id: "logistics", cx: 460, cy: 200, label: "Logistics" },
-                    { id: "support", cx: 520, cy: 310, label: "Support" },
-                    { id: "expansion", cx: 620, cy: 260, label: "Expansion" },
-                  ].map((node) => {
-                    const isNodeActive = activeCategory === node.id;
+                    const dotColor =
+                      location.type === "hq"    ? "bg-rose-500" :
+                      location.type === "major" ? "bg-amber-400" :
+                      location.type === "mall"  ? "bg-blue-400"  :
+                      "bg-white/60";
+
                     return (
-                      <g
-                        key={node.id}
-                        onClick={() => setActiveCategory(node.id)}
-                        className="cursor-pointer"
+                      <button
+                        key={location.id}
+                        onMouseEnter={() => setHoveredLocation(location)}
+                        onMouseLeave={() => setHoveredLocation(null)}
+                        className="absolute group"
+                        style={{
+                          left: `${location.x}%`,
+                          top: `${location.y}%`,
+                          transform: "translate(-50%,-50%)",
+                          zIndex: isHQ ? 20 : 10,
+                        }}
                       >
-                        {/* Glow halo */}
-                        {/* Glow halo / Pulsing ring */}
-                        <circle
-                          cx={node.cx}
-                          cy={node.cy}
-                          r={isNodeActive ? 20 : 12}
-                          fill={isNodeActive ? "transparent" : "rgba(255, 255, 255, 0.05)"}
-                          stroke={isNodeActive ? "#E11D48" : "none"}
-                          strokeWidth={isNodeActive ? 6 : 0}
-                          className={`transition-all duration-500 ease-out ${isNodeActive ? "animate-pulse" : ""}`}
+                        {/* Ping for HQ */}
+                        {isHQ && (
+                          <>
+                            <div className="absolute inset-0 -translate-x-[3px] -translate-y-[3px] w-5 h-5 rounded-full bg-rose-500/70 animate-ping" />
+                            <div
+                              className="absolute inset-0 -translate-x-[3px] -translate-y-[3px] w-5 h-5 rounded-full bg-rose-500/40 animate-ping"
+                              style={{ animationDelay: "0.6s" }}
+                            />
+                          </>
+                        )}
+
+                        {/* Pin dot */}
+                        <div
+                          className={`relative rounded-full border-2 border-white/80 shadow-lg transition-all duration-300 ${
+                            isHQ ? "w-3 h-3" : "w-2 h-2"
+                          } ${dotColor} ${isHovered ? "scale-150" : "scale-100"}`}
                         />
-                        <circle
-                          cx={node.cx}
-                          cy={node.cy}
-                          r={isNodeActive ? 8 : 6}
-                          fill={isNodeActive ? "#E11D48" : "rgba(255,255,255,0.3)"}
-                          stroke={isNodeActive ? "none" : "#ffffff"}
-                          strokeWidth={isNodeActive ? 0 : 1}
-                          className="transition-all duration-500 ease-out"
-                        />
-                        {/* Label */}
-                        <text
-                          x={node.cx}
-                          y={node.cy - (isNodeActive ? 28 : 16)}
-                          textAnchor="middle"
-                          fill={isNodeActive ? "#ffffff" : "rgba(255,255,255,0.4)"}
-                          fontSize={isNodeActive ? "11px" : "9px"}
-                          fontWeight={isNodeActive ? "bold" : "normal"}
-                          letterSpacing="0.1em"
-                          className="transition-all duration-500 ease-out uppercase pointer-events-none select-none"
+
+                        {/* Hover / permanent label */}
+                        <div
+                          className={`absolute left-1/2 -translate-x-1/2 mt-1.5 whitespace-nowrap transition-all duration-200 pointer-events-none ${
+                            isHovered || isHQ ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                          }`}
                         >
-                          {node.label}
-                        </text>
-                      </g>
+                          <p className="text-[10px] font-semibold tracking-wide text-white drop-shadow-sm">
+                            {location.name}
+                          </p>
+                        </div>
+                      </button>
                     );
                   })}
-                </svg>
 
-                {/* Floating active info card in the map */}
-                <div className="absolute bottom-4 left-4 right-4 lg:bottom-6 lg:left-6 lg:right-auto lg:w-80 p-4 lg:p-5 rounded-2xl bg-slate-950/90 border border-white/10 shadow-2xl backdrop-blur-md select-none text-left">
-                  <h4 className="text-sm font-bold text-white mb-1 uppercase tracking-wider flex items-center gap-2">
-                    <Compass size={14} className="text-rose-500" />
-                    {categories.find(c => c.id === activeCategory)?.title}
-                  </h4>
-                  <p className="text-[11px] text-white/50 leading-relaxed">
-                    {activeCategory === "operations" && "Large-scale mechanised underground mining systems supporting continuous operational development."}
-                    {activeCategory === "infrastructure" && "Dedicated underground engineering systems, asset maintenance, and technical support frameworks."}
-                    {activeCategory === "logistics" && "Robust supply chain network with strategic spare parts inventory valued at over US$3 million."}
-                    {activeCategory === "support" && "Comprehensive workforce logistics, onsite housing, and 24-hour catering support systems."}
-                    {activeCategory === "expansion" && "Long-term regional expansion and future resource exploration zones."}
-                  </p>
+                  {/* Hover Tooltip */}
+                  {hoveredLocation && (
+                    <div
+                      className="absolute bottom-4 right-4 bg-[#0B1A3A]/95 backdrop-blur-md border border-white/10 rounded-xl p-4 min-w-[200px] shadow-2xl pointer-events-none"
+                      style={{ zIndex: 30 }}
+                    >
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <MapPin size={12} className="text-rose-500" />
+                        <p className="text-[9px] font-bold tracking-[0.2em] uppercase text-white/50">
+                          {PROVINCES.find((p) => p.id === hoveredLocation.province)?.name}
+                        </p>
+                      </div>
+                      <p className="text-base font-bold text-white leading-tight mb-0.5">
+                        {hoveredLocation.name}
+                      </p>
+                      <p className="text-[11px] text-white/40 capitalize">
+                        {hoveredLocation.type === "hq"     ? "Head Office"   :
+                         hoveredLocation.type === "major"  ? "Major Branch"  :
+                         hoveredLocation.type === "mall"   ? "Mall Location" :
+                         "Local Branch"}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Mobile stats bar */}
+                <div className="flex sm:hidden items-center justify-around mt-6 border-t border-white/10 pt-5">
+                  {[
+                    { val: "40+", label: "Branches"  },
+                    { val: "10",  label: "Provinces" },
+                    { val: "24/7",label: "Service"   },
+                  ].map(({ val, label }) => (
+                    <div key={label} className="text-center">
+                      <p className="text-2xl font-black text-white">{val}</p>
+                      <p className="text-[9px] tracking-[0.18em] uppercase text-white/40 mt-0.5">{label}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
-            </div>
 
-            {/* Bottom Controls */}
-            <div className="flex flex-col sm:flex-row items-center justify-between border-t border-white/10 pt-6 gap-4 w-full select-none">
-              {/* Slider representation */}
-              <div className="flex items-center gap-4">
-                <span className="text-[9px] font-bold tracking-widest text-white/40 uppercase">Operational Network</span>
-                <div className="w-48 h-1.5 bg-white/10 rounded-full overflow-hidden relative">
-                  <div
-                    className="absolute left-0 top-0 bottom-0 bg-rose-500 rounded-full transition-all duration-500"
-                    style={{
-                      width: activeCategory === "operations" ? "20%" :
-                        activeCategory === "infrastructure" ? "40%" :
-                          activeCategory === "logistics" ? "60%" :
-                            activeCategory === "support" ? "80%" : "100%"
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Action Button */}
-              <a
-                href="#"
-                onClick={(e) => e.preventDefault()}
-                className="flex items-center gap-2 bg-white/10 border border-white/20 text-white rounded-full px-6 py-2.5 text-xs font-bold hover:bg-rose-600 hover:border-rose-600 hover:text-white transition-all duration-300 cursor-pointer shadow-lg hover:shadow-rose-600/20"
-              >
-                <span>Discover Infrastructure →</span>
-              </a>
             </div>
 
           </div>

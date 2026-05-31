@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { type ButtonHTMLAttributes, type ReactNode, forwardRef, JSX } from "react";
+import { type ButtonHTMLAttributes, type ReactNode, forwardRef, JSX, memo } from "react";
 import { cn } from "@/lib/utils";
 import { buttonHover } from "@/lib/animations";
 
@@ -38,63 +38,65 @@ const sizeStyles: Record<ButtonSize, string> = {
   xl: "px-10 py-5 text-xl",
 };
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      variant = "primary",
-      size = "md",
-      children,
-      isLoading = false,
-      leftIcon,
-      rightIcon,
-      fullWidth = false,
-      className,
-      disabled,
-      asChild,
-      ...props
-    },
-    ref
-  ) => {
-    // If asChild is true, we should ideally use Slot from @radix-ui/react-slot
-    // but for simplicity here, we'll just render the button.
-    // Next.js Link components often work fine inside motion.button if we pass the right props.
-    
-    return (
-      <motion.button
-        ref={ref}
-        variants={buttonHover}
-        initial="rest"
-        whileHover="hover"
-        whileTap="tap"
-        className={cn(
-          "relative inline-flex items-center justify-center gap-2",
-          "font-medium tracking-wide transition-colors duration-200",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2",
-          "disabled:opacity-50 disabled:cursor-not-allowed",
-          "select-none cursor-pointer",
-          variantStyles[variant],
-          sizeStyles[size],
-          fullWidth && "w-full",
-          className
-        )}
-        disabled={disabled ?? isLoading}
-        {...(props as any)}
-      >
-        {isLoading ? (
-          <span className="flex items-center gap-2">
-            <LoadingSpinner />
-            <span>Loading...</span>
-          </span>
-        ) : (
-          <>
-            {leftIcon && <span className="flex-shrink-0">{leftIcon}</span>}
-            <span>{children}</span>
-            {rightIcon && <span className="flex-shrink-0">{rightIcon}</span>}
-          </>
-        )}
-      </motion.button>
-    );
-  }
+export const Button = memo(
+  forwardRef<HTMLButtonElement, ButtonProps>(
+    (
+      {
+        variant = "primary",
+        size = "md",
+        children,
+        isLoading = false,
+        leftIcon,
+        rightIcon,
+        fullWidth = false,
+        className,
+        disabled,
+        asChild,
+        ...props
+      },
+      ref
+    ) => {
+      // If asChild is true, we should ideally use Slot from @radix-ui/react-slot
+      // but for simplicity here, we'll just render the button.
+      // Next.js Link components often work fine inside motion.button if we pass the right props.
+
+      return (
+        <motion.button
+          ref={ref}
+          variants={buttonHover}
+          initial="rest"
+          whileHover="hover"
+          whileTap="tap"
+          className={cn(
+            "relative inline-flex items-center justify-center gap-2",
+            "font-medium tracking-wide transition-colors duration-200",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2",
+            "disabled:opacity-50 disabled:cursor-not-allowed",
+            "select-none cursor-pointer",
+            variantStyles[variant],
+            sizeStyles[size],
+            fullWidth && "w-full",
+            className
+          )}
+          disabled={disabled ?? isLoading}
+          {...(props as any)}
+        >
+          {isLoading ? (
+            <span className="flex items-center gap-2">
+              <LoadingSpinner />
+              <span>Loading...</span>
+            </span>
+          ) : (
+            <>
+              {leftIcon && <span className="flex-shrink-0">{leftIcon}</span>}
+              <span>{children}</span>
+              {rightIcon && <span className="flex-shrink-0">{rightIcon}</span>}
+            </>
+          )}
+        </motion.button>
+      );
+    }
+  )
 );
 
 Button.displayName = "Button";

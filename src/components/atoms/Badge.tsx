@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import type { JSX, ReactNode } from "react";
+import { memo, type JSX, type ReactNode } from "react";
 
 type BadgeVariant = "default" | "outline" | "muted" | "dot";
 
@@ -16,7 +16,7 @@ const variantStyles: Record<BadgeVariant, string> = {
   dot: "bg-transparent text-neutral-600 pl-0",
 };
 
-export function Badge({
+export const Badge = memo(function Badge({
   children,
   variant = "default",
   className,
@@ -36,4 +36,6 @@ export function Badge({
       {children}
     </span>
   );
-}
+});
+
+Badge.displayName = "Badge";

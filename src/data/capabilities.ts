@@ -166,3 +166,130 @@ export function getAdjacentCapabilities(slug: string) {
   
   return { prev, next };
 }
+
+export interface GalleryItem {
+  src: string;
+  caption: string;
+}
+
+export function getCapabilityGallery(slug: string): GalleryItem[] {
+  switch (slug) {
+    case "underground-workshop":
+      return [
+        { src: "/Underground Workshop.webp", caption: "Heavy Maintenance Bays" },
+        { src: "/Mechanised Fleet.webp", caption: "Hydraulic System Repairs" },
+        { src: "/Engineering & Maintenance.webp", caption: "Electrical Calibrations" },
+        { src: "/Strategic Warehousing.webp", caption: "Critical Spare Parts Depot" },
+        { src: "/Safety & Compliance.webp", caption: "Technician Training Programs" },
+        { src: "/Operational Command.webp", caption: "Digital Diagnostics Center" },
+      ];
+    case "strategic-warehousing":
+      return [
+        { src: "/Strategic Warehousing.webp", caption: "US$3M+ Parts Stockpile" },
+        { src: "/Logistics Network.webp", caption: "Shift Materials Dispatch" },
+        { src: "/Underground Workshop.webp", caption: "Parts Assembly Stations" },
+        { src: "/Mechanised Fleet.webp", caption: "Heavy Transport Fleet Support" },
+        { src: "/Infrastructure Systems.webp", caption: "Centralized Supply Depots" },
+        { src: "/Operational Command.webp", caption: "Smart Inventory Tracking" },
+      ];
+    case "mechanised-fleet":
+      return [
+        { src: "/Mechanised Fleet.webp", caption: "Articulated Dump Trucks" },
+        { src: "/Underground Workshop.webp", caption: "LHD Loader Servicing" },
+        { src: "/Infrastructure Systems.webp", caption: "Drill Rig Fleet Deployment" },
+        { src: "/Safety & Compliance.webp", caption: "Twin-Boom Boomer Operations" },
+        { src: "/Rescue Systems.webp", caption: "Automated Utility Fleet" },
+        { src: "/Logistics Network.webp", caption: "Ore Transportation Systems" },
+      ];
+    case "rescue-systems":
+      return [
+        { src: "/Rescue Systems.webp", caption: "Underground Rescue Chambers" },
+        { src: "/Safety & Compliance.webp", caption: "Atmospheric Monitoring Units" },
+        { src: "/Emergency Readiness.webp", caption: "Sub-5-Minute Response Protocols" },
+        { src: "/Continuous Training.webp", caption: "Safety Drills & Education" },
+        { src: "/Operational Command.webp", caption: "Real-Time Tracking Systems" },
+        { src: "/Workforce Facilities.webp", caption: "Emergency Medical Center" },
+      ];
+    case "logistics-network":
+      return [
+        { src: "/Logistics Network.webp", caption: "Ore Sizing & Conveyor Handling" },
+        { src: "/Mechanised Fleet.webp", caption: "Articulated Mine Haulers" },
+        { src: "/Infrastructure Systems.webp", caption: "Heavy Surface Transit Depot" },
+        { src: "/Workforce Facilities.webp", caption: "Staff Transport Operations" },
+        { src: "/Operational Command.webp", caption: "Real-Time Fleet Dispatch" },
+        { src: "/Strategic Warehousing.webp", caption: "Consumables Inventory Depots" },
+      ];
+    case "operational-command":
+      return [
+        { src: "/Operational Command.webp", caption: "Central Control Interface" },
+        { src: "/Safety & Compliance.webp", caption: "Safety Telemetry Control" },
+        { src: "/Logistics Network.webp", caption: "Real-Time Fleet Monitors" },
+        { src: "/Engineering & Maintenance.webp", caption: "Predictive Health Dashboards" },
+        { src: "/Infrastructure Systems.webp", caption: "Substation Control Network" },
+        { src: "/Underground Workshop.webp", caption: "Maintenance Queue Display" },
+      ];
+    case "workforce-facilities":
+      return [
+        { src: "/Workforce Facilities.webp", caption: "International Lodgings" },
+        { src: "/Logistics Network.webp", caption: "Shift Transport Hub" },
+        { src: "/Safety & Compliance.webp", caption: "Catering and Dining Hall" },
+        { src: "/Emergency Readiness.webp", caption: "On-site Medical Clinic" },
+        { src: "/Community Safety Culture.webp", caption: "Recreational Fields" },
+        { src: "/Continuous Training.webp", caption: "Welfare Support Center" },
+      ];
+    case "engineering-maintenance":
+      return [
+        { src: "/Engineering & Maintenance.webp", caption: "Predictive Asset Auditing" },
+        { src: "/Underground Workshop.webp", caption: "High-Pressure Hydraulic Rig" },
+        { src: "/Mechanised Fleet.webp", caption: "LHD Loader Calibration" },
+        { src: "/Strategic Warehousing.webp", caption: "Pre-Assembled Component Depot" },
+        { src: "/Operational Command.webp", caption: "Telemetry Analysis Labs" },
+        { src: "/Safety & Compliance.webp", caption: "Engine Load Testing" },
+      ];
+    case "production-development":
+      return [
+        { src: "/Production Development.webp", caption: "Lateral Tunnel Excavation" },
+        { src: "/Mechanised Fleet.webp", caption: "High-Speed Declines Sinking" },
+        { src: "/Infrastructure Systems.webp", caption: "Decline Ventilation Mains" },
+        { src: "/Underground Workshop.webp", caption: "Production Face Support" },
+        { src: "/Safety & Compliance.webp", caption: "Geotechnical Rock Bolting" },
+        { src: "/Logistics Network.webp", caption: "Rapid High-Tonnage Haulage" },
+      ];
+    case "safety-compliance":
+      return [
+        { src: "/Safety & Compliance.webp", caption: "Mandatory Pre-Shift Briefing" },
+        { src: "/Rescue Systems.webp", caption: "Self-Rescuer Inspection" },
+        { src: "/Continuous Training.webp", caption: "Over 5,000 Hours Safety Ed." },
+        { src: "/Emergency Readiness.webp", caption: "On-Site Rescue Drills" },
+        { src: "/Community Safety Culture.webp", caption: "Outreach Partnership Centers" },
+        { src: "/Operational Command.webp", caption: "Continuous Gas Telemetry" },
+      ];
+    case "infrastructure-systems":
+      return [
+        { src: "/Infrastructure Systems.webp", caption: "Power & Utility Substation" },
+        { src: "/Strategic Warehousing.webp", caption: "Consolidated Material Depots" },
+        { src: "/Underground Workshop.webp", caption: "Surface Machine Shop" },
+        { src: "/Logistics Network.webp", caption: "Administrative Office Blocks" },
+        { src: "/Workforce Facilities.webp", caption: "Personnel Transit Centers" },
+        { src: "/Future Expansion.webp", caption: "Regional Expansion Yards" },
+      ];
+    case "future-expansion":
+      return [
+        { src: "/Future Expansion.webp", caption: "Sub-Saharan Growth Strategy" },
+        { src: "/Infrastructure Systems.webp", caption: "Regional Operations Headquarters" },
+        { src: "/Logistics Network.webp", caption: "Heavy Equipment Mobilization" },
+        { src: "/Continuous Training.webp", caption: "International Skills Exchange" },
+        { src: "/Safety & Compliance.webp", caption: "Unified Mining Frameworks" },
+        { src: "/Operational Command.webp", caption: "Global Command Operations" },
+      ];
+    default:
+      return [
+        { src: "/Workforce Facilities.webp", caption: "System Overview" },
+        { src: "/Underground Workshop.webp", caption: "Active Operations" },
+        { src: "/Strategic Warehousing.webp", caption: "Material Supply" },
+        { src: "/Mechanised Fleet.webp", caption: "Heavy Machinery" },
+        { src: "/Rescue Systems.webp", caption: "Emergency Systems" },
+        { src: "/Logistics Network.webp", caption: "Distribution Network" },
+      ];
+  }
+}

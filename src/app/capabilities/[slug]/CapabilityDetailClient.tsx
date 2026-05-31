@@ -3,7 +3,8 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { getCapabilityBySlug, getAdjacentCapabilities } from "@/data/capabilities";
+import Image from "next/image";
+import { getCapabilityBySlug, getAdjacentCapabilities, getCapabilityGallery } from "@/data/capabilities";
 
 interface CapabilityDetailClientProps {
   slug: string;
@@ -15,6 +16,7 @@ export function CapabilityDetailClient({ slug }: CapabilityDetailClientProps) {
 
   const { prev, next } = getAdjacentCapabilities(slug);
   const Icon = capability.icon;
+  const gallery = getCapabilityGallery(slug);
 
   return (
     <main className="min-h-screen bg-white">
@@ -23,13 +25,17 @@ export function CapabilityDetailClient({ slug }: CapabilityDetailClientProps) {
       <section className="relative w-full h-[55vh] min-h-[420px] overflow-hidden">
 
         {/* Background Image */}
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url("${encodeURI(capability.bgImage)}")` }}
+        <Image
+          src={capability.bgImage}
+          alt={capability.title}
+          fill
+          sizes="100vw"
+          className="object-cover"
+          priority
         />
 
         {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" style={{ zIndex: 1 }} />
 
         {/* Content */}
         <div className="relative z-10 h-full max-w-screen-xl mx-auto px-6 lg:px-12 flex flex-col justify-end pb-12">
@@ -46,7 +52,7 @@ export function CapabilityDetailClient({ slug }: CapabilityDetailClientProps) {
             </div>
 
             {/* Number */}
-            <span className="text-xs font-semibold tracking-[0.3em] text-white/70 uppercase">
+            <span className="text-xs font-semibold tracking-[0.3em] text-white/77 uppercase">
               Capability {capability.num} / 12
             </span>
           </motion.div>
@@ -131,6 +137,58 @@ export function CapabilityDetailClient({ slug }: CapabilityDetailClientProps) {
               </div>
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* ── IMAGE GALLERY SECTION ───────────────────────────── */}
+      <section className="max-w-screen-xl mx-auto px-6 lg:px-12 pb-24 md:pb-32">
+        <p className="text-[11px] font-semibold tracking-[0.3em] text-neutral-400 uppercase mb-8">
+          Systems &amp; Environments Gallery
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-5 w-full">
+          {gallery.map((img, i) => {
+            // Staggered Asymmetrical column spans matching the exact layouts from the screenshot
+            const colSpan =
+              i === 0 ? "col-span-1 md:col-span-3" :
+                i === 1 ? "col-span-1 md:col-span-5" :
+                  i === 2 ? "col-span-1 md:col-span-4" :
+                    i === 3 ? "col-span-1 md:col-span-5" :
+                      i === 4 ? "col-span-1 md:col-span-4" :
+                        "col-span-1 md:col-span-3";
+
+            return (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                className={`${colSpan} relative h-[260px] md:h-[320px] rounded-2xl overflow-hidden group shadow-sm bg-neutral-100 cursor-pointer`}
+              >
+                {/* Image */}
+                <Image
+                  src={img.src}
+                  alt={img.caption}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover group-hover:scale-105 transition-transform duration-700 select-none"
+                  draggable={false}
+                  loading="lazy"
+                />
+
+                {/* Bottom dark radial shadow overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent flex flex-col justify-end p-6 select-none" style={{ zIndex: 1 }} />
+
+                {/* Caption Text Box */}
+                <div className="absolute bottom-0 left-0 right-0 p-6 z-10 pointer-events-none">
+                  <p className="text-sm font-bold text-white tracking-wide drop-shadow-sm group-hover:translate-x-1.5 transition-transform duration-300">
+                    {img.caption}
+                  </p>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
       </section>
 

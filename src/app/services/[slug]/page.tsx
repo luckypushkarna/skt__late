@@ -3,6 +3,7 @@
 import { notFound, useParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { CARDS } from "@/lib/servicesData";
 import {
   Wrench, Package, Truck, Shield, Network, Monitor,
@@ -31,15 +32,29 @@ export default function ServiceDetailPage() {
   const next = CARDS[currentIndex + 1] ?? null;
 
   // Subtle parallax on the hero image
-  const heroRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLImageElement>(null);
   useEffect(() => {
+    let active = true;
+    let ticking = false;
+
     const handleScroll = () => {
-      if (!heroRef.current) return;
-      const scrollY = window.scrollY;
-      heroRef.current.style.transform = `translateY(${scrollY * 0.25}px)`;
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          if (!active) return;
+          if (heroRef.current) {
+            const scrollY = window.scrollY;
+            heroRef.current.style.transform = `translate3d(0, ${scrollY * 0.25}px, 0)`;
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      active = false;
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   return (
@@ -47,16 +62,20 @@ export default function ServiceDetailPage() {
       {/* ── Hero ── */}
       <section className="relative h-[70vh] min-h-[480px] overflow-hidden bg-neutral-950">
         {/* Parallax BG */}
-        <div
+        <Image
+          src={card.bgImage}
+          alt={card.title}
+          fill
+          sizes="100vw"
+          className="object-cover will-change-transform"
+          priority
           ref={heroRef}
-          className="absolute inset-[-10%] bg-cover bg-center will-change-transform"
-          style={{ backgroundImage: `url("${encodeURI(card.bgImage)}")` }}
         />
         {/* Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" style={{ zIndex: 1 }} />
 
         {/* Back link */}
-        <div className="absolute top-28 left-0 right-0 max-w-screen-xl mx-auto px-6 lg:px-12">
+        <div className="absolute top-28 left-0 right-0 max-w-screen-xl mx-auto px-6 lg:px-12" style={{ zIndex: 2 }}>
           <Link
             href="/services"
             className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors duration-300 text-sm font-medium"
@@ -67,7 +86,7 @@ export default function ServiceDetailPage() {
         </div>
 
         {/* Hero copy */}
-        <div className="absolute inset-x-0 bottom-0 max-w-screen-xl mx-auto px-6 lg:px-12 pb-14">
+        <div className="absolute inset-x-0 bottom-0 max-w-screen-xl mx-auto px-6 lg:px-12 pb-14" style={{ zIndex: 2 }}>
           {/* Card number + tags */}
           <div className="flex items-center gap-3 mb-5">
             <span className="text-xs font-bold text-white/40 tracking-[0.2em]">

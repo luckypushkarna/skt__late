@@ -146,7 +146,7 @@ function StatCard({
 // ─── Scroll-based text animation ─────────────────────────────────────────────
 
 interface ScrollAnimatedWordProps {
-  readonly word: { text: string; suffix: string };
+  readonly word: { text: string; suffix: string; hasBr?: boolean };
   readonly index: number;
   readonly total: number;
   readonly scrollYProgress: any;
@@ -175,6 +175,7 @@ function ScrollAnimatedWord({
         {word.text}
       </motion.span>
       {word.suffix}
+      {word.hasBr && <br className="hidden md:inline" />}
     </span>
   );
 }
@@ -187,6 +188,11 @@ function ScrollAnimatedQuote() {
   });
 
   const animWords = [
+    { text: "We", suffix: " " },
+    { text: "don't", suffix: " " },
+    { text: "just", suffix: " " },
+    { text: "extract", suffix: " " },
+    { text: "minerals.", suffix: " ", hasBr: true },
     { text: "We", suffix: " " },
     { text: "extract", suffix: " " },
     { text: "potential", suffix: " " },
@@ -220,6 +226,15 @@ export function OperationalScaleSection(): JSX.Element {
   const sectionRef = useRef<HTMLElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
   const statsInView = useInView(statsRef, { once: true, margin: "-80px" });
+
+  const quoteBlockRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: quoteBlockRef,
+    offset: ["start 90%", "end 45%"],
+  });
+
+  const imageX = useTransform(scrollYProgress, [0, 0.65], ["-120px", "0px"]);
+  const imageOpacity = useTransform(scrollYProgress, [0, 0.5], [0, 1]);
 
   return (
     <section
@@ -290,6 +305,7 @@ export function OperationalScaleSection(): JSX.Element {
 
         {/* ── Chairman Editorial Quote ── */}
         <motion.div
+          ref={quoteBlockRef}
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -312,10 +328,7 @@ export function OperationalScaleSection(): JSX.Element {
 
             {/* Portrait — col-span-5 */}
             <motion.div
-              initial={{ opacity: 0, x: -24 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.9, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+              style={{ x: imageX, opacity: imageOpacity }}
               className="lg:col-span-5"
             >
               <div className="relative max-w-[440px] mx-auto lg:mx-0">
@@ -379,7 +392,7 @@ export function OperationalScaleSection(): JSX.Element {
                     marginBottom: "40px",
                   }}
                 >
-                  We don&apos;t just extract minerals. <br className="hidden md:inline" />{" "}<ScrollAnimatedQuote />
+                  <ScrollAnimatedQuote />
                 </p>
 
                 {/* Signature block */}

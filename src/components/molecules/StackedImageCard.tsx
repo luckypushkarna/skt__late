@@ -1,5 +1,6 @@
-import { JSX } from "react";
+import { memo, type JSX } from "react";
 import { Play } from "lucide-react";
+import Image from "next/image";
 
 export interface StatItem {
   value: string;
@@ -12,13 +13,15 @@ export interface StackedImageCardProps {
   className?: string;
 }
 
-export function StackedImageCard({
+const DEFAULT_STATS: StatItem[] = [
+  { value: "$600B", label: "Global Contribution" },
+  { value: "70%", label: "Sustainable Practices" },
+  { value: "10%", label: "Annual Growth Rate" },
+];
+
+export const StackedImageCard = memo(function StackedImageCard({
   backgroundImage = "https://picsum.photos/seed/mining/800/1200",
-  stats = [
-    { value: "$600B", label: "Global Contribution" },
-    { value: "70%", label: "Sustainable Practices" },
-    { value: "10%", label: "Annual Growth Rate" },
-  ],
+  stats = DEFAULT_STATS,
   className = "",
 }: StackedImageCardProps): JSX.Element {
   return (
@@ -72,13 +75,17 @@ export function StackedImageCard({
         }}
       >
         {/* Background Image */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url('${backgroundImage}')` }}
+        <Image
+          src={backgroundImage}
+          alt="Stacked card background"
+          fill
+          sizes="(max-width: 500px) 100vw, 500px"
+          className="object-cover"
+          loading="lazy"
         />
         
         {/* Dark overlay for text contrast matching the gradient spec */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
         
         {/* Content Overlay - Top Left Action */}
         <div className="relative z-40 p-6 flex justify-start">
@@ -119,4 +126,6 @@ export function StackedImageCard({
       </div>
     </div>
   );
-}
+});
+
+StackedImageCard.displayName = "StackedImageCard";

@@ -1,6 +1,6 @@
 "use client";
 
-import type { JSX } from "react";import Link from "next/link";
+import { memo, type JSX } from "react"; import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -13,7 +13,7 @@ interface NavLinkProps {
   readonly light?: boolean;
 }
 
-export function NavLink({
+export const NavLink = memo(function NavLink({
   href,
   children,
   className,
@@ -53,4 +53,6 @@ export function NavLink({
       )}
     </Link>
   );
-}
+});
+
+NavLink.displayName = "NavLink";

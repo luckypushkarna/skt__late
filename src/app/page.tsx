@@ -62,6 +62,7 @@ export default function HomePage(): JSX.Element {
         <PartnersSection />
       </Suspense>
 
+
       {/* Contact */}
       <Suspense fallback={<SectionSkeleton />}>
         <ContactSection />

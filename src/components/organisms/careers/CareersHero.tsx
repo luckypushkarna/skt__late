@@ -49,8 +49,12 @@ export function CareersHero(): JSX.Element {
 
   useEffect(() => {
     let ctx: { revert: () => void } | null = null;
+    let mounted = true;
     const init = async () => {
       const gsap = (await import("gsap")).default;
+
+      if (!mounted) return;
+
       ctx = gsap.context(() => {
         // Subtle floating behavior for employee cards and metrics
         gsap.to(".floating-card-1", {
@@ -92,7 +96,10 @@ export function CareersHero(): JSX.Element {
     };
 
     init();
-    return () => ctx?.revert();
+    return () => {
+      mounted = false;
+      ctx?.revert();
+    };
   }, []);
 
   return (

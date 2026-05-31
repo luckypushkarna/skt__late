@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
+import Image from "next/image";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -33,7 +34,7 @@ const SPAN_CLASSES: Record<MediaItem["span"], string> = {
 
 // ─── Individual Bento Card ────────────────────────────────────────────────────
 
-function BentoCard({
+const BentoCard = memo(function BentoCard({
   item,
   index,
   onClick,
@@ -71,12 +72,14 @@ function BentoCard({
           }}
         />
       ) : (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <Image
           src={item.url}
           alt={item.title}
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 300px"
           className="absolute inset-0 w-full h-full object-cover"
-          loading={index < 3 ? "eager" : "lazy"}
+          priority={index < 3}
+          loading={index < 3 ? undefined : "lazy"}
           style={{
             transition: "transform 0.7s cubic-bezier(0.16,1,0.3,1)",
             transform: hovered ? "scale(1.06)" : "scale(1)",
@@ -121,11 +124,13 @@ function BentoCard({
       </div>
     </motion.div>
   );
-}
+});
+
+BentoCard.displayName = "BentoCard";
 
 // ─── Lightbox Modal ───────────────────────────────────────────────────────────
 
-function Lightbox({
+const Lightbox = memo(function Lightbox({
   items,
   activeIndex,
   onClose,
@@ -210,13 +215,16 @@ function Lightbox({
               style={{ maxHeight: "80vh" }}
             />
           ) : (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={item.url}
-              alt={item.title}
-              className="w-full h-full object-contain"
-              style={{ maxHeight: "80vh" }}
-            />
+            <div className="relative w-full h-[80vh]">
+              <Image
+                src={item.url}
+                alt={item.title}
+                fill
+                sizes="(max-width: 1024px) 90vw, 1024px"
+                className="object-contain"
+                priority
+              />
+            </div>
           )}
 
           {/* Caption */}
@@ -235,7 +243,9 @@ function Lightbox({
       </motion.div>
     </AnimatePresence>
   );
-}
+});
+
+Lightbox.displayName = "Lightbox";
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 

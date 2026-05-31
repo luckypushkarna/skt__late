@@ -15,11 +15,15 @@ export function SmoothScrollProvider({
     let tickerCallback: ((time: number) => void) | null = null;
     let gsapInstance: any = null;
 
+    let mounted = true;
+
     const initScroll = async () => {
       // Dynamic imports for Next.js SSR compatibility
       const gsap = (await import("gsap")).default;
       const { ScrollTrigger } = await import("gsap/ScrollTrigger");
       
+      if (!mounted) return;
+
       gsap.registerPlugin(ScrollTrigger);
       gsapInstance = gsap;
 
@@ -50,6 +54,7 @@ export function SmoothScrollProvider({
     initScroll();
 
     return () => {
+      mounted = false;
       if (lenis) {
         lenis.destroy();
       }

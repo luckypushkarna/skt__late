@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, JSX } from "react";
+import { useEffect, useRef, JSX, memo } from "react";
 import { motion, useInView } from "framer-motion";
 import { cn } from "@/lib/utils";
 import type { Stat } from "@/types";
@@ -29,7 +29,7 @@ function fmt(value: number, dp: number): string {
   return Math.round(value).toLocaleString("en-US");
 }
 
-export function StatCard({ stat, index, className }: StatCardProps): JSX.Element {
+export const StatCard = memo(function StatCard({ stat, index, className }: StatCardProps): JSX.Element {
   const ref = useRef<HTMLDivElement>(null);
   const valueRef = useRef<HTMLSpanElement>(null);
   const cursorRef = useRef<HTMLSpanElement>(null);
@@ -50,6 +50,7 @@ export function StatCard({ stat, index, className }: StatCardProps): JSX.Element
     let timer2: NodeJS.Timeout | null = null;
     let interval: NodeJS.Timeout | null = null;
     let gsapTween: any = null;
+    let mounted = true;
 
     // ── Typewriter for text values (e.g. "Zero") ──────────────────────────
     if (isText) {
@@ -63,7 +64,7 @@ export function StatCard({ stat, index, className }: StatCardProps): JSX.Element
 
       timer1 = setTimeout(() => {
         interval = setInterval(() => {
-          if (!el) return;
+          if (!mounted || !el) return;
           el.textContent += chars[i] || "";
           i++;
           if (i >= chars.length) {
@@ -71,7 +72,7 @@ export function StatCard({ stat, index, className }: StatCardProps): JSX.Element
             // Blink cursor briefly then hide it
             if (cursor) {
               timer2 = setTimeout(() => {
-                if (cursor) cursor.style.opacity = "0";
+                if (mounted && cursor) cursor.style.opacity = "0";
               }, 800);
             }
           }
@@ -79,6 +80,7 @@ export function StatCard({ stat, index, className }: StatCardProps): JSX.Element
       }, startDelay);
 
       return () => {
+        mounted = false;
         if (timer1) clearTimeout(timer1);
         if (timer2) clearTimeout(timer2);
         if (interval) clearInterval(interval);
@@ -89,8 +91,8 @@ export function StatCard({ stat, index, className }: StatCardProps): JSX.Element
     const target = rawNumeric;
     const counter = { val: 0 };
 
-    (async () => {
-      const { default: gsap } = await import("gsap");
+    import("gsap").then(({ default: gsap }) => {
+      if (!mounted) return;
 
       gsapTween = gsap.to(counter, {
         val: target,
@@ -98,15 +100,16 @@ export function StatCard({ stat, index, className }: StatCardProps): JSX.Element
         delay: index * 0.12,
         ease: "power4.out",
         onUpdate() {
-          if (el) el.textContent = fmt(counter.val, dp);
+          if (mounted && el) el.textContent = fmt(counter.val, dp);
         },
         onComplete() {
-          if (el) el.textContent = fmt(target, dp);
+          if (mounted && el) el.textContent = fmt(target, dp);
         },
       });
-    })();
+    }).catch(() => {});
 
     return () => {
+      mounted = false;
       if (gsapTween) gsapTween.kill();
     };
   }, [isInView, isText, stat.value, rawNumeric, dp, index]);
@@ -191,4 +194,6 @@ export function StatCard({ stat, index, className }: StatCardProps): JSX.Element
       )}
     </motion.div>
   );
-}
+});
+
+StatCard.displayName = "StatCard";
